@@ -110,6 +110,23 @@ body{background:var(--bg);color:var(--ink);
 .pk.kd .pkNo{color:var(--ink2);font-size:12px}
 
 .wrap{padding:16px;max-width:1600px}
+.dGrid{display:grid;gap:16px;grid-template-columns:1fr}
+.dRight{display:none}
+.qHint{font-size:11.5px;color:var(--ink3);margin-top:8px;line-height:1.4}
+.qHint b{color:var(--ink2)}
+.qEmpty{padding:16px;color:var(--ink3);font-size:13.5px}
+.qRow{display:flex;align-items:center;gap:9px;padding:9px 16px;border-top:1px solid var(--line2)}
+.qRow:first-child{border-top:0}
+.qRow.gone{background:#FBFBFC}
+.qRow.gone .lname{text-decoration:line-through;color:var(--ink3)}
+.qRow.mine{background:var(--accent-bg)}
+.qRow.top{box-shadow:inset 3px 0 0 var(--accent)}
+@media(min-width:1080px){
+  .dGrid{grid-template-columns:minmax(0,1.1fr) minmax(330px,.9fr)}
+  .dRight{display:block}
+  .qPanel{position:sticky;top:150px;max-height:calc(100vh - 170px);display:flex;flex-direction:column}
+  .qPanel .rowList{overflow-y:auto}
+}
 @media(min-width:900px){
   .wrap{padding:22px 26px}
   .grid{gap:16px}
@@ -207,6 +224,7 @@ input[type=search]:focus{outline:2px solid var(--accent);outline-offset:-1px;bor
   color:var(--ink2);border-radius:7px;padding:7px 12px;cursor:pointer}
 .cbtn[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:#fff}
 .cbtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.cbtn:disabled{opacity:.45;cursor:not-allowed}
 .colhead{display:flex;align-items:center;gap:10px;padding:9px 16px;background:var(--bg);
   border-bottom:1px solid var(--line);font-size:11px;font-weight:600;letter-spacing:.07em;
   text-transform:uppercase;color:var(--ink3)}
@@ -241,6 +259,28 @@ input[type=search]:focus{outline:2px solid var(--accent);outline-offset:-1px;bor
 .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);flex:none;margin-top:7px}
 
 /* ---------- grade ---------- */
+.rdChips{gap:5px}
+.rdChips .cbtn{padding:5px 9px;font-size:12px;min-width:34px}
+.simBanner{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:9px;
+  background:var(--accent);color:#fff;margin-bottom:12px;flex-wrap:wrap}
+.simBanner b{font-weight:700}
+.simBanner .sbSub{opacity:.85;font-size:13px}
+.simBanner button{margin-left:auto;font:inherit;font-size:13px;font-weight:600;
+  background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);color:#fff;
+  border-radius:7px;padding:7px 12px;cursor:pointer}
+.simRow{display:flex;align-items:center;gap:9px;padding:9px 16px;border-top:1px solid var(--line2);font-size:14px}
+.simRow:first-child{border-top:0}
+.simRow.me{background:var(--accent-bg)}
+.simRow.me .lname{color:var(--accent);font-weight:600}
+.simNo{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--ink3);width:52px;flex:none}
+.simTm{font-size:11px;color:var(--ink3);width:56px;flex:none}
+.gradePick{display:flex;align-items:center;gap:12px;padding:14px;border:1.5px solid var(--accent);
+  background:var(--accent-bg);border-radius:9px;margin-bottom:14px;flex-wrap:wrap}
+.gpMain{flex:1;min-width:150px}
+.gpTitle{font-weight:600;font-size:15px}
+.gpSub{font-size:13px;color:var(--ink2);margin-top:2px}
+.gpOr{display:flex;align-items:center;gap:10px;margin:0 0 12px;color:var(--ink3);font-size:12.5px}
+.gpOr::before,.gpOr::after{content:'';flex:1;height:1px;background:var(--line)}
 .gradeWrap{display:flex;align-items:center;gap:16px}
 .gLetter{font-size:52px;font-weight:700;letter-spacing:-.04em;color:var(--accent);line-height:1}
 .gNum{font-size:22px;font-weight:700;letter-spacing:-.02em}
@@ -265,6 +305,7 @@ input[type=search]:focus{outline:2px solid var(--accent);outline-offset:-1px;bor
       <button class="nav" data-tab="draft" role="tab" aria-selected="true"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="2.5" y="2.5" width="6" height="6" rx="1.5"/><rect x="11.5" y="2.5" width="6" height="6" rx="1.5"/><rect x="2.5" y="11.5" width="6" height="6" rx="1.5"/><rect x="11.5" y="11.5" width="6" height="6" rx="1.5"/></svg><span class="navTxt">Draft</span></button>
       <button class="nav" data-tab="board" role="tab" aria-selected="false"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 5h14M3 10h14M3 15h14"/></svg><span class="navTxt">Board</span></button>
       <div class="sGroup">Prep</div><div class="sGroupRule"></div>
+      <button class="nav" data-tab="sim" role="tab" aria-selected="false"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M10 2.5v15M4 6l6-3.5L16 6v8l-6 3.5L4 14z"/></svg><span class="navTxt">Sim</span></button>
       <button class="nav" data-tab="roster" role="tab" aria-selected="false"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 4h11M6 10h11M6 16h11"/><circle cx="3" cy="4" r="1"/><circle cx="3" cy="10" r="1"/><circle cx="3" cy="16" r="1"/></svg><span class="navTxt">Roster</span></button>
       <button class="nav" data-tab="grade" role="tab" aria-selected="false"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 3h9l3 3v11H4z"/><path d="M7 9h6M7 12.5h4"/></svg><span class="navTxt">Grade</span></button>
       <button class="nav" data-tab="strategy" role="tab" aria-selected="false"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 16V8M8 16V4M13 16v-5M18 16v-9"/></svg><span class="navTxt">Strategy</span></button>
@@ -297,7 +338,19 @@ input[type=search]:focus{outline:2px solid var(--accent);outline-offset:-1px;bor
 
 <!-- ================= DRAFT ================= -->
   <section class="wrap" id="tab-draft">
+   <div class="dGrid">
+    <div class="dLeft">
+    <div class="simBanner hidden" id="simBanner"></div>
     <div class="grid g4" id="stats" style="margin-bottom:12px"></div>
+    <div class="panel hidden" id="sincePanel" style="margin-bottom:12px">
+      <div class="pHead"><div><div class="pTitle" id="sinceTitle">Taken since your last pick</div>
+        <div class="pSub" id="sinceSub"></div></div>
+        <span class="badge b-gray" id="sinceCount"></span></div>
+      <div style="padding:10px 16px 4px;border-bottom:1px solid var(--line2)">
+        <div class="chips rdChips" id="sinceRounds"></div>
+      </div>
+      <div class="rowList" id="since"></div>
+    </div>
 
     <div class="panel" id="recPanel" style="margin-bottom:12px">
       <div class="pHead">
@@ -346,6 +399,24 @@ input[type=search]:focus{outline:2px solid var(--accent);outline-offset:-1px;bor
     </div>
 
     <div class="note" id="assumptions"></div>
+    </div><!-- /dLeft -->
+
+    <aside class="dRight">
+      <div class="panel qPanel">
+        <div class="pHead">
+          <div><div class="pTitle">Mark picks</div>
+               <div class="pSub">Type a name, tap Gone or Mine</div></div>
+          <span class="badge b-gray" id="qCount"></span>
+        </div>
+        <div class="pBody" style="padding-bottom:10px">
+          <input type="search" id="qq" placeholder="Search to mark…" autocomplete="off"
+                 autocorrect="off" autocapitalize="none" spellcheck="false" enterkeyhint="done">
+          <div class="qHint">Enter marks <b>Gone</b> · Shift+Enter marks <b>Mine</b> · Esc clears</div>
+        </div>
+        <div class="rowList" id="quick"></div>
+      </div>
+    </aside>
+   </div><!-- /dGrid -->
   </section>
 
   <!-- ================= STRATEGY ================= -->
@@ -385,6 +456,44 @@ input[type=search]:focus{outline:2px solid var(--accent);outline-offset:-1px;bor
     </div>
   </section>
 
+  <!-- ================= SIM ================= -->
+  <section class="wrap hidden" id="tab-sim">
+    <div class="panel" style="margin-bottom:12px">
+      <div class="pHead">
+        <div><div class="pTitle">Mock draft simulator</div>
+             <div class="pSub">11 computer managers, 12-team snake, you pick 10th</div></div>
+        <span class="badge b-accent" id="simBadge">Not started</span>
+      </div>
+      <div class="pBody">
+        <div class="pSub" style="margin-bottom:12px">Each computer pick samples from that player's real
+        ADP distribution, so no two sims play out the same way. They also respect roster limits —
+        nobody drafts five quarterbacks.</div>
+        <div class="chips">
+          <button class="cbtn" id="simStart" style="background:var(--accent);border-color:var(--accent);color:#fff">Start new sim</button>
+          <button class="cbtn" id="simAuto">Auto-pick for me</button>
+          <button class="cbtn" id="simStop">Stop</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel hidden" id="simTurn" style="margin-bottom:12px">
+      <div class="pHead"><div><div class="pTitle" id="simTurnTitle">Sim running</div>
+        <div class="pSub" id="simTurnSub"></div></div>
+        <span class="badge b-green" id="simPickBadge"></span></div>
+      <div class="pBody"><div class="pSub">Your picks happen on the <b>Draft</b> tab, with the full
+      recommendation, alternatives, edge bar and roster. This tab is the log.</div>
+      <div class="chips" style="margin-top:10px"><button class="cbtn" data-simact="goDraft"
+        style="background:var(--accent);border-color:var(--accent);color:#fff">Go to Draft tab</button></div>
+      <div id="simOptions" class="hidden"></div></div>
+    </div>
+
+    <div class="panel hidden" id="simLogPanel">
+      <div class="pHead"><div><div class="pTitle">Draft log</div>
+        <div class="pSub" id="simLogSub"></div></div></div>
+      <div class="rowList" id="simLog"></div>
+    </div>
+  </section>
+
   <!-- ================= ROSTER ================= -->
   <section class="wrap hidden" id="tab-roster">
     <div class="grid g4" id="rStats" style="margin-bottom:12px"></div>
@@ -410,16 +519,25 @@ input[type=search]:focus{outline:2px solid var(--accent);outline-offset:-1px;bor
   <section class="wrap hidden" id="tab-grade">
     <div class="panel" style="margin-bottom:12px">
       <div class="pHead">
-        <div><div class="pTitle">Grade a mock</div>
-             <div class="pSub">Paste your Yahoo roster, get it scored in your settings</div></div>
-        <span class="badge b-accent" id="flexBadge">1 flex</span>
+        <div><div class="pTitle">Grade a roster</div>
+             <div class="pSub">Score any roster in your exact settings</div></div>
+        <span class="badge b-accent" id="flexBadge">2 flex</span>
       </div>
       <div class="pBody">
+        <div class="gradePick">
+          <div class="gpMain">
+            <div class="gpTitle">Grade what's in the tool</div>
+            <div class="gpSub" id="gpCount">No picks marked yet</div>
+          </div>
+          <button class="cbtn" id="gradeLive"
+            style="background:var(--accent);border-color:var(--accent);color:#fff">Grade it</button>
+        </div>
+        <div class="gpOr"><span>or paste a roster drafted somewhere else</span></div>
         <div class="pSub" style="margin-bottom:10px">Grading uses the format selected in the top bar.
         Switch to <b>Yahoo mock</b> before grading a mock — the two use different replacement levels.</div>
         <textarea id="paste" rows="7" autocorrect="off" autocapitalize="none" spellcheck="false" placeholder="Select your whole roster table on Yahoo, copy, paste here."></textarea>
         <div class="chips" style="margin-top:10px">
-          <button class="cbtn" id="gradeBtn" style="background:var(--accent);border-color:var(--accent);color:#fff">Grade it</button>
+          <button class="cbtn" id="gradeBtn">Grade pasted roster</button>
           <button class="cbtn" id="clearPaste">Clear</button>
         </div>
         <div id="matchNote" class="pSub" style="margin-top:10px"></div>
@@ -465,8 +583,17 @@ const RAW = [["Jahmyr Gibbs","RB",336.7,1,1,0.4,6,0.319],["Bijan Robinson","RB",
 const MY_PICKS = [10,15,34,39,58,63,82,87,106,111,130,135,154,159,178];
 const LAST_TWO = [159,178];
 
+const NICK={'Arizona':'cardinals','Atlanta':'falcons','Baltimore':'ravens','Buffalo':'bills',
+'Carolina':'panthers','Chicago':'bears','Cincinnati':'bengals','Cleveland':'browns','Dallas':'cowboys',
+'Denver':'broncos','Detroit':'lions','Green Bay':'packers','Houston':'texans','Indianapolis':'colts',
+'Jacksonville':'jaguars','Kansas City':'chiefs','LA Chargers':'chargers','LA Rams':'rams',
+'Las Vegas':'raiders','Miami':'dolphins','Minnesota':'vikings','New England':'patriots',
+'New Orleans':'saints','NY Giants':'giants','NY Jets':'jets','Philadelphia':'eagles',
+'Pittsburgh':'steelers','Seattle':'seahawks','San Francisco':'49ers niners','Tampa Bay':'buccaneers bucs',
+'Tennessee':'titans','Washington':'commanders'};
 const P = RAW.map((r,i)=>({id:i,n:r[0],pos:r[1],pts:r[2],adp:r[3],consensus:!!r[4],
                            sd:r[5]||Math.max(1,0.118*r[3]), bye:r[6]||0, tdShare:r[7]||0}));
+P.forEach(p=>{ p.alt = p.pos==='DST' ? (NICK[p.n.replace(' Defense','')]||'') : ''; });
 const byId = Object.fromEntries(P.map(p=>[p.id,p]));
 
 let gone = new Set();   // drafted by anyone
@@ -914,7 +1041,7 @@ function renderGradeOut(){
   const qbBye=(st.find(x=>x.lab==='QB'&&x.p)||{}).p;
   const dead=st.filter(x=>!x.empty&&(x.pts-REPL[x.p.pos])<5);
   document.getElementById('gradeOut').classList.remove('hidden');
-  document.getElementById('gradeSub').textContent=`${FLEX_N} flex · benchmark ${CAL.bench} · floor ${CAL.floor}`;
+  document.getElementById('gradeSub').textContent=`${FLEX_N} flex · benchmark ${CAL.bench} · floor ${CAL.floor} · ${mine.size} picks`;
   document.getElementById('gradeBody').innerHTML=`
     <div class="gradeWrap"><div class="gLetter">${L}</div><div>
       <div class="gNum">${total.toFixed(0)} pts</div>
@@ -1052,6 +1179,8 @@ function renderRounds(){
 }
 
 let filterPos='ALL', query='', sortMode='ADP';
+let quickQ='';
+let sinceView='since';   // 'since' | round number
 let myBoardCache=null, myBoardKey='', probableOnly=false;
 function myBoardRanks(){
   const key=gone.size+':'+mine.size+':'+currentPick();
@@ -1080,9 +1209,58 @@ function renderControls(){
         return np ? `<button class="cbtn" id="probBtn" aria-pressed="${probableOnly}" style="margin-left:8px">Lasts to #${np}</button>` : ''; })()
       : '');
 }
+/* Quick-mark: the high-frequency action lives next to the recommendation,
+   so a run of picks doesn't cost a tab switch each time. */
+function simLive(){ return !!sim && sim.pick<=SIM_TEAMS*SIM_ROUNDS; }
+function quickMatches(){
+  const q=quickQ.trim().toLowerCase();
+  if(!q){
+    if(simLive()){
+      const r=recommend();
+      if(r.rule) return P.filter(p=>p.pos===r.need&&!gone.has(p.id)).sort((a,b)=>a.adp-b.adp).slice(0,7);
+      if(r.list&&r.list.length) return r.list.slice(0,7).map(x=>x.p);
+    }
+    // otherwise: who's likely to come off the board next
+    return P.filter(p=>!gone.has(p.id)).sort((a,b)=>a.adp-b.adp).slice(0,7);
+  }
+  // rank: any word starting with the query beats a mid-word match; then ADP
+  const wordStart=p=>p.n.toLowerCase().split(/[\s.'-]+/).some(w=>w.startsWith(q))?0:1;
+  const hit=P.filter(p=>p.n.toLowerCase().includes(q)||(p.alt&&p.alt.includes(q)));
+  hit.sort((a,b)=>{
+    const d=wordStart(a)-wordStart(b); if(d) return d;
+    if(gone.has(a.id)!==gone.has(b.id)) return gone.has(a.id)?1:-1;
+    return a.adp-b.adp;
+  });
+  return hit.slice(0,7);
+}
+function renderQuick(){
+  const box=document.getElementById('quick'); if(!box) return;
+  const list=quickMatches();
+  const cnt=document.getElementById('qCount');
+  if(cnt) cnt.textContent = quickQ.trim()? list.length+' match'+(list.length===1?'':'es')
+        : (simLive()? 'Best available for you' : 'Next off the board');
+  const sub=document.querySelector('.qPanel .pSub');
+  if(sub) sub.textContent = simLive()? 'Pick #'+sim.pick+' — search or tap Draft' : 'Type a name, tap Gone or Mine';
+  const ttl=document.querySelector('.qPanel .pTitle');
+  if(ttl) ttl.textContent = simLive()? 'Make your pick' : 'Mark picks';
+  box.innerHTML = list.length ? list.map((p,i)=>`
+    <div class="qRow ${gone.has(p.id)?'gone':''} ${mine.has(p.id)?'mine':''} ${i===0&&quickQ.trim()?'top':''}">
+      <span class="pos ${p.pos}">${p.pos}</span>
+      <span class="lname">${esc(p.n)}</span>
+      <span class="lsub" style="width:32px">${p.adp}</span>
+      <span class="lnum" style="width:48px">${p.pts>0?p.pts.toFixed(1):'—'}</span>
+      <span class="acts">
+        ${simLive()
+          ? `<button class="mini" data-sim="${p.id}" style="background:var(--accent);border-color:var(--accent);color:#fff">Draft</button>`
+          : `<button class="mini ${gone.has(p.id)&&!mine.has(p.id)?'on':''}" data-g="${p.id}" aria-label="Mark ${esc(p.n)} drafted">Gone</button>
+             <button class="mini ${mine.has(p.id)?'on':''}" data-m="${p.id}" aria-label="Mark ${esc(p.n)} as mine">Mine</button>`}
+      </span></div>`).join('')
+    : '<div class="qEmpty">No player matches that.</div>';
+}
+
 function renderBoard(){
   const q=query.toLowerCase(), cur=currentPick();
-  let list=P.filter(p=>(filterPos==='ALL'||p.pos===filterPos)&&(!q||p.n.toLowerCase().includes(q)));
+  let list=P.filter(p=>(filterPos==='ALL'||p.pos===filterPos)&&(!q||p.n.toLowerCase().includes(q)||(p.alt&&p.alt.includes(q))));
   let ranks=null;
   if(sortMode==='ADP') list=list.slice().sort((a,b)=>a.adp-b.adp);
   else if(sortMode==='VALUE') list=list.slice().sort((a,b)=>b.vorp-a.vorp);
@@ -1143,6 +1321,15 @@ function renderStrip(){
   document.getElementById('sideLbl').textContent  = done>=15 ? 'Complete' : `Round ${MY_PICKS.indexOf(cur)+1}`;
 }
 
+function renderGradePicker(){
+  const el=document.getElementById('gpCount'); if(!el) return;
+  const st=starters(), filled=st.filter(x=>!x.empty).length;
+  el.textContent = mine.size
+    ? `${mine.size} pick${mine.size===1?'':'s'} marked · ${filled} of ${st.length} starting slots filled`
+    : 'No picks marked yet — mark players as Mine on the Draft tab';
+  const btn=document.getElementById('gradeLive');
+  if(btn) btn.disabled=!mine.size;
+}
 function renderGhostNote(){
   const cust=P.filter(p=>p.custom);
   const el=document.getElementById('ghostNote'); if(!el) return;
@@ -1195,15 +1382,256 @@ function renderRoster(){
       <span class="lnum">${p.pts>0?p.pts.toFixed(1):'—'}</span></div>`;}).join('')
     : '<div class="empty">Mark players as Mine and they show up here in order.</div>';
 }
-function all(){ renderStrip(); renderGhostNote(); renderStats(); renderRoster(); renderSlots(); renderRec(); renderBoard(); renderControls(); }
+
+/* ================= mock draft simulator =================
+   12-team snake, you pick 10th. Each computer pick draws a value from that player's
+   real ADP distribution (mean = ADP, spread = his measured standard deviation) and
+   takes the lowest, subject to roster limits. Different every run, but shaped like
+   a real draft rather than uniformly random. */
+const SIM_TEAMS=12, SIM_ROUNDS=15, MY_SEAT=10;
+let sim=null;
+
+function gauss(){ let u=0,v=0; while(!u)u=Math.random(); while(!v)v=Math.random();
+  return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); }
+
+function seatFor(pickNo){                       // snake order
+  const rd=Math.ceil(pickNo/SIM_TEAMS), idx=(pickNo-1)%SIM_TEAMS;
+  return rd%2 ? idx+1 : SIM_TEAMS-idx;
+}
+function simMyPicks(){
+  const out=[];
+  for(let r=1;r<=SIM_ROUNDS;r++){
+    const idx = r%2 ? MY_SEAT-1 : SIM_TEAMS-MY_SEAT;
+    out.push((r-1)*SIM_TEAMS+idx+1);
+  }
+  return out;
+}
+const CAP={QB:2,RB:6,WR:6,TE:2,K:1,DST:1};   // real managers don't roster 8 receivers
+const MIN={QB:1,RB:2,WR:2,TE:1,K:1,DST:1};
+
+function aiChoose(team, pickNo){
+  const taken=sim.taken, roster=sim.rosters[team];
+  const have={QB:0,RB:0,WR:0,TE:0,K:0,DST:0};
+  roster.forEach(id=>have[byId[id].pos]++);
+  const picksLeft=SIM_ROUNDS-roster.length;
+  const unmet=Object.keys(MIN).filter(p=>have[p]<MIN[p]);
+  const forced = picksLeft<=unmet.length+1 ? unmet : null;   // start reserving a pick early
+
+  const pool=P.filter(p=>{
+    if(taken.has(p.id)) return false;
+    if(have[p.pos]>=CAP[p.pos]) return false;
+    if(forced) return forced.includes(p.pos);
+    if((p.pos==='K'||p.pos==='DST') && pickNo < 130) return false;   // nobody sane goes earlier
+    if(p.pos==='QB' && have.QB>=1 && pickNo < 120) return false;
+    if(p.pos==='TE' && have.TE>=1 && pickNo < 120) return false;
+    return true;
+  });
+  if(!pool.length){
+    // relax the forced/timing rules but never the roster caps
+    let relaxed=P.filter(p=>!taken.has(p.id)&&have[p.pos]<CAP[p.pos]);
+    if(!relaxed.length) relaxed=P.filter(p=>!taken.has(p.id));
+    return relaxed.length? relaxed.sort((a,b)=>a.adp-b.adp)[0] : null;
+  }
+  // soft bias toward unfilled starting slots, so teams build a legal roster naturally
+  // rather than only being forced into it on the last pick
+  let best=null,bv=1e9;
+  for(const p of pool){
+    let v=p.adp + gauss()*Math.max(p.sd||8,3);
+    if(have[p.pos]<MIN[p.pos]) v-=10;
+    if(p.pos==='RB'&&have.RB<2) v-=6;
+    if(p.pos==='WR'&&have.WR<2) v-=6;
+    if(v<bv){ bv=v; best=p; }
+  }
+  return best;
+}
+
+function simRunTo(stopPick){
+  while(sim && sim.pick<=SIM_TEAMS*SIM_ROUNDS && sim.pick!==stopPick){
+    const seat=seatFor(sim.pick);
+    if(seat===MY_SEAT) break;
+    const p=aiChoose(seat, sim.pick);
+    if(!p){ sim.pick++; continue; }
+    sim.taken.add(p.id); sim.rosters[seat].push(p.id);
+    sim.log.push({pick:sim.pick, seat, id:p.id});
+    gone.add(p.id);
+    sim.pick++;
+  }
+}
+function simStartNew(){
+  gone=new Set(); mine=new Set(); pickLog=[]; myBoardCache=null; myBoardKey='';
+  ghostGone=0; sinceView='since'; quickQ='';
+  ['qq','paste'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  const mn=document.getElementById('matchNote'); if(mn) mn.innerHTML='';
+  const go=document.getElementById('gradeOut'); if(go) go.classList.add('hidden');
+  sim={pick:1, taken:new Set(), rosters:{}, log:[], mine:simMyPicks()};
+  for(let t=1;t<=SIM_TEAMS;t++) sim.rosters[t]=[];
+  sinceView='since';
+  simRunTo(null); save(); all(); renderSim(); goToDraftTab();
+}
+function simDraft(id){
+  if(!sim) return;
+  const p=byId[id]; if(!p||sim.taken.has(id)) return;
+  sim.taken.add(id); sim.rosters[MY_SEAT].push(id);
+  sim.log.push({pick:sim.pick, seat:MY_SEAT, id, me:true});
+  pickLog.push({id, at:sim.pick});
+  mine.add(id); gone.add(id);
+  sim.pick++; myBoardCache=null; sinceView='since';
+  simRunTo(null); save(); all(); renderSim(); goToDraftTab();
+}
+function simAutoPick(){
+  if(!sim) return;
+  const r=recommend();
+  if(r.rule){
+    const cand=P.filter(p=>p.pos===r.need&&!sim.taken.has(p.id)).sort((a,b)=>a.adp-b.adp)[0];
+    if(cand) simDraft(cand.id);
+    return;
+  }
+  if(r.list&&r.list.length) simDraft(r.list[0].p.id);
+}
+
+function goToDraftTab(){
+  document.querySelectorAll('[data-tab]').forEach(b=>b.setAttribute('aria-selected', b.dataset.tab==='draft'));
+  ['draft','sim','roster','grade','strategy','board'].forEach(n=>{
+    const el=document.getElementById('tab-'+n); if(el) el.classList.toggle('hidden', n!=='draft'); });
+  const t=document.getElementById('pageTitle'); if(t) t.textContent='Draft';
+  window.scrollTo({top:0});
+}
+function renderSimBanner(){
+  const b=document.getElementById('simBanner'); if(!b) return;
+  if(!sim){ b.classList.add('hidden'); return; }
+  b.classList.remove('hidden');
+  const total=SIM_TEAMS*SIM_ROUNDS;
+  if(sim.pick>total){
+    b.innerHTML=`<div><b>Sim complete</b><div class="sbSub">All 180 picks in — open Grade to score it.</div></div>
+      <button data-simact="new">New sim</button>`;
+  } else {
+    const rd=Math.ceil(sim.pick/SIM_TEAMS);
+    b.innerHTML=`<div><b>Sim · you're on the clock at #${sim.pick}</b>
+      <div class="sbSub">Round ${rd} · ${sim.rosters[MY_SEAT].length} of 15 picks made</div></div>
+      <button data-simact="auto">Auto-pick</button><button data-simact="new">Restart</button>`;
+  }
+}
+function renderSince(){
+  const panel=document.getElementById('sincePanel'); if(!panel) return;
+  if(!sim || !sim.log.length){ panel.classList.add('hidden'); return; }
+  panel.classList.remove('hidden');
+
+  const roundsDone=Math.max(1, Math.ceil((sim.log[sim.log.length-1].pick)/SIM_TEAMS));
+  const chips=['since'].concat(Array.from({length:roundsDone},(_,i)=>i+1));
+  document.getElementById('sinceRounds').innerHTML = chips.map(c=>
+    `<button class="cbtn" data-since="${c}" aria-pressed="${String(sinceView)===String(c)}">${c==='since'?'Since my pick':'R'+c}</button>`).join('');
+
+  let rows, title, sub;
+  if(sinceView==='since'){
+    let i=sim.log.length-1; rows=[];
+    while(i>=0 && !sim.log[i].me){ rows.push(sim.log[i]); i--; }
+    rows.reverse();
+    title='Taken since your last pick';
+    sub = rows.length? `Picks ${rows[0].pick}\u2013${rows[rows.length-1].pick} while you waited`
+                     : 'Nothing yet — you just picked';
+  } else {
+    const rd=+sinceView, lo=(rd-1)*SIM_TEAMS+1, hi=rd*SIM_TEAMS;
+    rows=sim.log.filter(e=>e.pick>=lo&&e.pick<=hi).sort((a,b)=>a.pick-b.pick);
+    title=`Round ${rd}`;
+    sub=`Picks ${lo}\u2013${Math.min(hi,sim.log[sim.log.length-1].pick)}`;
+  }
+  document.getElementById('sinceTitle').textContent=title;
+  document.getElementById('sinceSub').textContent=sub;
+  document.getElementById('sinceCount').textContent=rows.length+' pick'+(rows.length===1?'':'s');
+  if(!rows.length){ document.getElementById('since').innerHTML='<div class="qEmpty">No picks in this range yet.</div>'; return; }
+  document.getElementById('since').innerHTML = rows.map(e=>{
+    const p=byId[e.id];
+    return `<div class="simRow ${e.me?'me':''}"><span class="simNo">#${e.pick}</span>
+      <span class="simTm">${e.me?'YOU':'Team '+e.seat}</span>
+      <span class="pos ${p.pos}">${p.pos}</span>
+      <span class="lname">${esc(p.n)}</span>
+      <span class="lsub" style="width:34px">${p.adp}</span>
+      <span class="lsub" style="width:52px;color:${e.pick-p.adp<=-8?'var(--rose)':'var(--ink3)'}">${e.pick-p.adp>0?'+':''}${e.pick-p.adp}</span>
+      </div>`;}).join('');
+}
+function renderSim(){
+  const turn=document.getElementById('simTurn'), logP=document.getElementById('simLogPanel');
+  const badge=document.getElementById('simBadge');
+  if(!sim){ badge.textContent='Not started'; turn.classList.add('hidden'); logP.classList.add('hidden'); return; }
+  const total=SIM_TEAMS*SIM_ROUNDS, done=sim.pick>total;
+  badge.textContent = done? 'Complete' : `Pick ${sim.pick} of ${total}`;
+  logP.classList.remove('hidden');
+
+  if(done){
+    turn.classList.remove('hidden');
+    document.getElementById('simTurnTitle').textContent='Draft complete';
+    document.getElementById('simTurnSub').textContent='Head to Grade or Roster to see how it went.';
+    document.getElementById('simPickBadge').textContent=`${sim.rosters[MY_SEAT].length} picks`;
+    document.getElementById('simOptions').innerHTML='';
+  } else {
+    turn.classList.remove('hidden');
+    const rd=Math.ceil(sim.pick/SIM_TEAMS);
+    document.getElementById('simTurnTitle').textContent="You're on the clock";
+    document.getElementById('simTurnSub').textContent=`Round ${rd} · pick ${sim.pick} overall`;
+    document.getElementById('simPickBadge').textContent=`#${sim.pick}`;
+    const r=recommend();
+    let opts;
+    if(r.rule){
+      opts=P.filter(p=>p.pos===r.need&&!sim.taken.has(p.id)).sort((a,b)=>a.adp-b.adp).slice(0,5)
+            .map(p=>({p,label:'rule'}));
+    } else {
+      opts=(r.list||[]).slice(0,6).map((x,i)=>({p:x.p, label:i===0?'recommended':''}));
+    }
+    document.getElementById('simOptions').innerHTML = opts.map(o=>`
+      <div class="lrow">
+        <span class="pos ${o.p.pos}">${o.p.pos}</span>
+        <span class="lname">${esc(o.p.n)}</span>
+        ${o.label?`<span class="badge b-accent" style="font-size:10px">${o.label}</span>`:''}
+        <span class="lsub" style="width:32px">${o.p.adp}</span>
+        <span class="lnum" style="width:48px">${o.p.pts>0?o.p.pts.toFixed(1):'—'}</span>
+        <button class="mini" data-sim="${o.p.id}">Draft</button>
+      </div>`).join('');
+  }
+
+  const recent=sim.log.slice(-40).reverse();
+  document.getElementById('simLogSub').textContent=`${sim.log.length} picks made · newest first`;
+  document.getElementById('simLog').innerHTML = recent.map(e=>{
+    const p=byId[e.id]; const rd=Math.ceil(e.pick/SIM_TEAMS);
+    return `<div class="simRow ${e.me?'me':''}">
+      <span class="simNo">${rd}.${String(((e.pick-1)%SIM_TEAMS)+1).padStart(2,'0')}</span>
+      <span class="simTm">${e.me?'YOU':'Team '+e.seat}</span>
+      <span class="pos ${p.pos}">${p.pos}</span>
+      <span class="lname">${esc(p.n)}</span>
+      <span class="lsub" style="width:32px">${p.adp}</span></div>`;}).join('');
+}
+
+/* One place that clears every piece of state, so nothing survives a reset. */
+function resetAll(){
+  gone=new Set(); mine=new Set(); pickLog=[];
+  sim=null; sinceView='since';
+  myBoardCache=null; myBoardKey='';
+  ghostGone=0;
+  for(let i=P.length-1;i>=0;i--) if(P[i].custom){ delete byId[P[i].id]; P.splice(i,1); }
+  customSeq=0;
+  probableOnly=false; filterPos='ALL'; query=''; quickQ='';
+  ['q','qq','paste','cname'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  ['matchNote','ghostNote'].forEach(id=>{ const el=document.getElementById(id); if(el) el.innerHTML=''; });
+  const go=document.getElementById('gradeOut'); if(go) go.classList.add('hidden');
+  const lg=document.getElementById('lowerGrid'); if(lg) lg.style.gridTemplateColumns='';
+  Store.clear().then(()=>{
+    save(); all(); renderSim();
+    document.querySelectorAll('[data-tab]').forEach(b=>b.setAttribute('aria-selected', b.dataset.tab==='draft'));
+    ['draft','sim','roster','grade','strategy','board'].forEach(nm=>{
+      const el=document.getElementById('tab-'+nm); if(el) el.classList.toggle('hidden', nm!=='draft'); });
+    const t=document.getElementById('pageTitle'); if(t) t.textContent='Draft';
+    window.scrollTo({top:0});
+  });
+}
+
+function all(){ renderSimBanner(); renderSince(); renderStrip(); renderGradePicker(); renderGhostNote(); renderStats(); renderRoster(); renderQuick(); renderSlots(); renderRec(); renderBoard(); renderControls(); }
 
 document.addEventListener('click',e=>{
   const t=e.target.closest('[data-tab]');
   if(t){ document.querySelectorAll('[data-tab]').forEach(b=>b.setAttribute('aria-selected',b===t));
-    ['draft','roster','grade','strategy','board'].forEach(n=>
+    ['draft','sim','roster','grade','strategy','board'].forEach(n=>
       document.getElementById('tab-'+n).classList.toggle('hidden', n!==t.dataset.tab));
     document.getElementById('pageTitle').textContent =
-      {draft:'Draft',roster:'Roster',grade:'Grade',strategy:'Strategy',board:'Board'}[t.dataset.tab];
+      {draft:'Draft',sim:'Sim',roster:'Roster',grade:'Grade',strategy:'Strategy',board:'Board'}[t.dataset.tab];
     window.scrollTo({top:0}); return; }
   const f=e.target.closest('[data-f]'); if(f){ filterPos=f.dataset.f; renderControls(); renderBoard(); return; }
   const fx=e.target.closest('[data-flex]');
@@ -1223,7 +1651,33 @@ document.addEventListener('click',e=>{
       pickLog=pickLog.filter(x=>x.id!==last.id);
       P.splice(P.indexOf(last),1); delete byId[last.id]; save(); all(); }
     return; }
-  if(e.target.id==='gradeBtn'){ runGrade(); return; }
+  const sv=e.target.closest('[data-since]');
+  if(sv){ sinceView = sv.dataset.since==='since' ? 'since' : +sv.dataset.since; renderSince(); return; }
+  const sa=e.target.closest('[data-simact]');
+  if(sa){ const a=sa.dataset.simact;
+    if(a==='goDraft') { goToDraftTab(); return; }
+    if(a==='auto') simAutoPick();
+    if(a==='new'){ if(confirm('Start a new sim? This clears the current draft.')) simStartNew(); }
+    return; }
+  if(e.target.id==='simStart'){
+    if(gone.size && !confirm('Start a new sim? This clears the current draft.')) return;
+    simStartNew(); return; }
+  if(e.target.id==='simStop'){ sim=null; renderSim(); return; }
+  if(e.target.id==='simAuto'){ simAutoPick(); return; }
+  const sd=e.target.closest('[data-sim]');
+  if(sd){ simDraft(+sd.dataset.sim); return; }
+  if(e.target.id==='gradeLive'){
+    if(!mine.size){ document.getElementById('matchNote').innerHTML=
+      '<b>Nothing to grade yet.</b> Mark players as Mine on the Draft tab, or paste a roster below.'; return; }
+    document.getElementById('matchNote').innerHTML =
+      `Grading the ${mine.size} pick${mine.size===1?'':'s'} you've marked in the tool.`;
+    document.getElementById('gradeOut').classList.remove('hidden');
+    renderGradeOut();
+    window.scrollTo({top:document.getElementById('gradeOut').offsetTop-60,behavior:'smooth'});
+    return; }
+  if(e.target.id==='gradeBtn'){
+    if(mine.size && !confirm(`You have ${mine.size} picks marked in the tool.\n\nPasting replaces them. Continue?`)) return;
+    runGrade(); return; }
   const ap=e.target.closest('[data-pick]');
   if(ap){ const id=+ap.dataset.pick; mine.add(id); gone.add(id);
     pendingAmb=pendingAmb.filter(a=>!a.options.some(o=>o.id===id));
@@ -1237,26 +1691,44 @@ document.addEventListener('click',e=>{
   const g=e.target.closest('[data-g]'), m=e.target.closest('[data-m]');
   if(g){ const id=+g.dataset.g;
     if(gone.has(id)&&!mine.has(id)) gone.delete(id); else { gone.add(id); mine.delete(id); pickLog=pickLog.filter(x=>x.id!==id); }
-    save(); myBoardCache=null; all(); return; }
+    save(); myBoardCache=null; const inQ=!!g.closest('.qPanel'); all();
+    if(inQ){ const el=document.getElementById('qq'); if(el){ quickQ=''; el.value=''; el.focus(); renderQuick(); } }
+    return; }
   if(m){ const id=+m.dataset.m;
     if(mine.has(id)){ mine.delete(id); gone.delete(id); pickLog=pickLog.filter(x=>x.id!==id); }
     else { pickLog.push({id, at: MY_PICKS[mine.size] ?? null}); mine.add(id); gone.add(id); }
-    save(); myBoardCache=null; all(); return; }
+    save(); myBoardCache=null; const inQ2=!!m.closest('.qPanel'); all();
+    if(inQ2){ const el=document.getElementById('qq'); if(el){ quickQ=''; el.value=''; el.focus(); renderQuick(); } }
+    return; }
   if(['reset','reset2','reset3'].includes((e.target.closest('button')||{}).id)){
     const n=gone.size;
-    if(!confirm(n? `Reset the draft?\n\nThis clears all ${n} marked players and your ${mine.size} picks. Cannot be undone.`
-                 : 'Reset the draft?')) return;
-    gone=new Set(); mine=new Set(); pickLog=[]; myBoardCache=null;
-    probableOnly=false; filterPos='ALL'; query='';
-    const q=document.getElementById('q'); if(q) q.value='';
-    Store.clear().then(()=>{ save(); all();
-      document.querySelectorAll('[data-tab]').forEach(b=>b.setAttribute('aria-selected', b.dataset.tab==='draft'));
-      ['draft','roster','grade','strategy','board'].forEach(nm=>
-        document.getElementById('tab-'+nm).classList.toggle('hidden', nm!=='draft'));
-      document.getElementById('pageTitle').textContent='Draft';
-      window.scrollTo({top:0}); }); }
+    if(!confirm(n? `Reset everything?\n\nThis clears all ${n} marked players, your ${mine.size} picks,`
+                 + ` any running sim and the last grade. Cannot be undone.`
+                 : 'Reset everything?')) return;
+    resetAll();
+  }
 });
 document.getElementById('q').addEventListener('input',e=>{query=e.target.value;renderBoard();});
+
+const qqEl=document.getElementById('qq');
+if(qqEl){
+  qqEl.addEventListener('input',e=>{ quickQ=e.target.value; renderQuick(); });
+  qqEl.addEventListener('keydown',e=>{
+    if(e.key==='Escape'){ quickQ=''; qqEl.value=''; renderQuick(); return; }
+    if(e.key!=='Enter') return;
+    e.preventDefault();
+    const top=quickMatches()[0];
+    if(!top) return;
+    if(simLive()){
+      quickQ=''; qqEl.value=''; simDraft(top.id); qqEl.focus(); return;
+    }
+    if(e.shiftKey){
+      if(!mine.has(top.id)){ pickLog.push({id:top.id, at: MY_PICKS[mine.size] ?? null});
+        mine.add(top.id); gone.add(top.id); }
+    } else if(!gone.has(top.id)) gone.add(top.id);
+    quickQ=''; qqEl.value=''; myBoardCache=null; save(); all(); qqEl.focus();
+  });
+}
 
 document.getElementById('assumptions').innerHTML=
  `<b>How the call is made.</b> Every projection is scored in your settings — 0.5 per reception, 4-point passing TDs, −1 interceptions, 6-point rushing and receiving TDs, 10 yards per point, −2 fumbles. For each available player it adds him to your roster, searches your next three picks exhaustively, and scores the resulting QB/RB/RB/WR/WR/TE/FLEX/FLEX lineup.
@@ -1272,7 +1744,7 @@ function setFlexUI(){
 }
 applyFlex(2);   // your league is the default; switch to 1 only for Yahoo mocks
 setFlexUI();
-load().then(()=>{ setFlexUI(); all();
+load().then(()=>{ setFlexUI(); all(); renderSim();
   const el=document.getElementById('storeMode');
   if(el) el.textContent = Store.mode==='local' ? 'Saved in this browser.'
     : (Store.mode==='session' ? 'Saved for this session.' : 'Not saving — private mode blocks storage.');
