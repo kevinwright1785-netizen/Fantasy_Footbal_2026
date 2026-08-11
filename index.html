@@ -462,7 +462,7 @@ input[type=search]:focus{outline:2px solid var(--accent);outline-offset:-1px;bor
         <span class="badge b-rose">Verified</span></div>
       <div class="pBody">
         <div class="callouts">
-          <div class="co"><span class="dot"></span><div><b>Any QB before round 5.</b> Allen beats the waiver QB by 70 points; a first-round RB beats his by 187. Yahoo's own analyst found zero of fifteen QBs priced at or below their projected finish.</div></div>
+          <div class="co"><span class="dot"></span><div><b>Any QB except Allen before round 5.</b> Allen is the one exception \u2014 he\u2019s 45 points clear of QB2 and worth taking in round 3 if he falls. Every other QB sits in a flat band (QB2\u2013QB11 span ~20 points), so reaching for one costs you a real skill player. A first-round RB beats his replacement by 187; a mid-round QB beats his by ~20.</div></div>
           <div class="co"><span class="dot"></span><div><b>Justin Herbert specifically.</b> Two independent projection sets rate him the worst QB value on the board — 66th ADP against a 105th projected finish.</div></div>
           <div class="co"><span class="dot"></span><div><b>K or DST before round 14.</b> Only three of the top ten kickers by ADP finished top ten last year. Both positions are available at your last two picks every year.</div></div>
         </div>
@@ -1149,9 +1149,13 @@ function renderRec(){
   const rd=MY_PICKS.indexOf(cur)+1;
   document.getElementById('recBadge').textContent = mine.size>=13?'Complete':('Round '+rd+' · Pick '+cur);
   if(mine.size>=13){
-    document.getElementById('recSub').textContent='Draft grade';
+    document.getElementById('recSub').textContent='Draft complete';
     document.getElementById('lowerGrid').style.gridTemplateColumns='1fr';
-    R.innerHTML=gradeHTML(); AP.classList.add('hidden'); return;
+    R.innerHTML=`<div class="recName" style="font-size:24px">Draft complete</div>
+      <div class="recMeta"><span class="badge b-green">${mine.size} picks made</span></div>
+      <div class="recWhy">Your full roster is drafted. Open the <b>Grade</b> tab for the score and
+      breakdown, or <b>Roster</b> to see your lineup and every pick.</div>`;
+    AP.classList.add('hidden'); return;
   }
   AP.classList.remove('hidden');
   const r=recommend();
@@ -1167,9 +1171,13 @@ function renderRec(){
   if(!a){R.innerHTML='<div class="recWhy">No players left in the pool.</div>';A.innerHTML='';return;}
   const margin=b?(a.sc-b.sc):0, NOISE=15, thin=margin<NOISE;
 
-  // Once nothing improves the starting lineup, the model has no opinion.
-  // Say so, and hand over the information that actually helps instead.
-  if(margin<0.5 && r.list.filter(x=>Math.abs(x.sc-a.sc)<0.5).length>=5){
+  // Depth mode ("no pick improves your lineup") is only honest once every starting
+  // slot is filled. While a QB/RB/WR/TE/FLEX slot is still empty, a pick DOES improve
+  // the lineup even if the forward sim scores candidates close together.
+  const slotsAllFull = starters().every(x=>!x.empty);
+  const roundNow = MY_PICKS.indexOf(cur)+1;
+  if(slotsAllFull && roundNow>=8 &&
+     margin<0.5 && r.list.filter(x=>Math.abs(x.sc-a.sc)<0.5).length>=5){
     R.innerHTML=depthRoundHTML(r.list); A.innerHTML=''; AP.classList.add('hidden'); return;
   }
   AP.classList.remove('hidden');
@@ -1212,10 +1220,10 @@ function renderRec(){
 const ROUNDS=[
  [1,10,'Best RB or WR','Edge at the top is 125–187 points, far bigger than anything later. No QB, no TE.'],
  [2,15,'Best RB or WR','Same logic. Achane and Henry often survive here; London usually does not.'],
- [3,34,'RB-weighted','The RB15–RB25 band is where Yahoo underprices. Hall, Javonte, Skattebo, Etienne all go after their projected finish.'],
+ [3,34,'RB-weighted, or Allen if he\u2019s there','The RB15\u2013RB25 band is where Yahoo underprices \u2014 Hall, Javonte, Skattebo, Etienne all go after their projected finish. One exception: Josh Allen (ADP 27) is 45 points clear of the next QB. If he slips to you here, he\u2019s the pick.'],
  [4,39,'RB or WR, fill the gap','If you went WR in round 3, rounds 4–6 must be RB, RB, WR with no wandering.'],
- [5,58,'Finish the 4-and-2','QB enters play here if Maye, Daniels or Hurts is sitting.'],
- [6,63,'QB or last RB','Allen only if he slid. Otherwise the QB5–QB11 band is interchangeable.'],
+ [5,58,'Finish the 4-and-2, or grab a QB','If you don\u2019t have Allen, this is the QB range \u2014 Maye (ADP 59), Daniels (56), Hurts (64) and Burrow (53) all go around here and project within a few points of each other. Take whichever is sitting; don\u2019t reach.'],
+ [6,63,'QB or best available','If you still don\u2019t have a QB, take one now \u2014 the QB4\u2013QB11 band is nearly flat, so any of them is fine. Otherwise best skill player.'],
  [7,82,'Tight end','TE5 through TE10 differ by four points total. This is the buy window, not round 2.'],
  [8,87,'WR3','Last pick that still moves your starting lineup.'],
  ['9–13','106+','Upside and handcuffs','Every edge reads 0.0 — nothing left changes your starters. Your call, not the model\'s.'],
