@@ -549,7 +549,7 @@ input[type=search]:focus{outline:2px solid var(--accent);outline-offset:-1px;bor
         <div class="gpOr"><span>or paste a roster drafted somewhere else</span></div>
         <div class="pSub" style="margin-bottom:10px">Grading uses the format selected in the top bar.
         Switch to <b>Yahoo mock</b> before grading a mock — the two use different replacement levels.</div>
-        <textarea id="paste" rows="7" autocorrect="off" autocapitalize="none" spellcheck="false" placeholder="Select your whole roster table on Yahoo, copy, paste here."></textarea>
+        <textarea id="paste" rows="7" autocorrect="off" autocapitalize="none" spellcheck="false" placeholder="Paste your Yahoo roster — the draft-results email, or the roster table from the app both work."></textarea>
         <div class="chips" style="margin-top:10px">
           <button class="cbtn" id="gradeBtn">Grade pasted roster</button>
           <button class="cbtn" id="clearPaste">Clear</button>
@@ -994,7 +994,40 @@ function matchEntries(entries){
   }
   return {hits, ambiguous};
 }
+function parseEmailFormat(text){
+  // "1. Cook III, James (Buf - RB)"  — Yahoo's mobile draft-results email
+  const rx=/^\s*\d+\.\s*(.+?)\s*\(([A-Za-z.]+)\s*[-\u2013]\s*(QB|RB|WR|TE|K|DEF|DST)\)\s*$/;
+  const lines=text.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
+  const rows=[];
+  for(const l of lines){
+    const m=l.match(rx); if(!m) continue;
+    let raw=m[1], pos=m[3];
+    if(pos==='DEF'||pos==='DST'){ rows.push({pos:'DST', name:raw}); continue; }
+    const name = raw.includes(',') ? (raw.split(',').slice(1).join(',').trim()+' '+raw.split(',')[0].trim()).trim() : raw;
+    rows.push({pos, name});
+  }
+  return rows.length>=5 ? rows : null;
+}
+function matchByNameAndPos(rows){
+  const hits=[], ambiguous=[], claimed=new Set();
+  const idx=new Map();
+  P.forEach(p=>{ if(p.pts<=0) return;
+    nameKeys(p.n).forEach(k=>{ const key=k+'|'+p.pos;
+      if(!idx.has(key)) idx.set(key,[]); idx.get(key).push(p); }); });
+  for(const r of rows){
+    if(r.pos==='DST'||r.pos==='K') continue;   // no projection; ignored like paste path
+    let pool=null;
+    for(const k of nameKeys(r.name)){ const c=idx.get(k+'|'+r.pos);
+      if(c){ const fresh=c.filter(p=>!claimed.has(p.id)); if(fresh.length){ pool=fresh; break; } } }
+    if(!pool){ continue; }
+    const pick=pool[0];
+    claimed.add(pick.id); hits.push(pick);
+  }
+  return {hits, ambiguous};
+}
 function parseRoster(text){
+  const email=parseEmailFormat(text);
+  if(email) return matchByNameAndPos(email);
   const entries=rosterEntries(text);
   if(entries.length>=3) return matchEntries(entries);
   const hay=normalizeText(text);
