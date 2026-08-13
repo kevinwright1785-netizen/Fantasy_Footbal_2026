@@ -629,10 +629,10 @@ function addCustom(name,pos,isMine){
 /* replacement level = the startable player you'd get off waivers */
 let FLEX_N = 2;   // your league has 2; Yahoo mocks default to 1
 const REPL_BY_FLEX = {
-  2:{QB:301.8, RB:150.0, WR:147.4, TE:120.5},
-  1:{QB:301.8, RB:166.1, WR:164.2, TE:120.5}
+  2:{QB:301.8, RB:150.0, WR:147.4, TE:120.5, K:137.0, DST:110.0},
+  1:{QB:301.8, RB:166.1, WR:164.2, TE:120.5, K:137.0, DST:110.0}
 };
-const CAL_BY_FLEX = { 2:{bench:1828.4, floor:1317.1}, 1:{bench:1631.8, floor:1249.0} };
+const CAL_BY_FLEX = { 2:{bench:1830.0, floor:1314.5}, 1:{bench:1640.0, floor:1249.0} };
 const REPL_UNUSED = (()=>{ const r={};
   for (const [pos,n] of [['QB',13],['RB',35],['WR',38],['TE',13]]){
     const s=P.filter(p=>p.pos===pos&&p.pts>0).sort((a,b)=>b.pts-a.pts);
@@ -911,7 +911,8 @@ function starters(){
   const fill=(pos,n,lab)=>{for(let i=0;i<n;i++){const p=g[pos][i];
     out.push({lab,p,pts:p?p.pts:REPL[pos],empty:!p}); if(p)used.add(p.id);}};
   fill('QB',1,'QB');fill('RB',2,'RB');fill('WR',2,'WR');fill('TE',1,'TE');
-  const b=[...mine].map(i=>byId[i]).filter(p=>!used.has(p.id)&&p.pos!=='QB'&&p.pts>0).sort((a,b)=>b.pts-a.pts);
+  const FLEX_OK={RB:1,WR:1,TE:1};
+  const b=[...mine].map(i=>byId[i]).filter(p=>!used.has(p.id)&&FLEX_OK[p.pos]&&p.pts>0).sort((a,b)=>b.pts-a.pts);
   for(let i=0;i<FLEX_N;i++){const p=b[i];out.push({lab:'FLEX',p,pts:p?p.pts:Math.max(REPL.RB,REPL.WR),empty:!p});}
   return out;
 }
@@ -1017,7 +1018,8 @@ function matchByNameAndPos(rows){
     nameKeys(p.n).forEach(k=>{ const key=k+'|'+p.pos;
       if(!idx.has(key)) idx.set(key,[]); idx.get(key).push(p); }); });
   for(const r of rows){
-    if(r.pos==='DST'||r.pos==='K') continue;   // no projection; ignored like paste path
+    if(r.pos==='DST') continue;                // team D still matched by name elsewhere; skip here
+    // K now projects, so fall through and match it
     let pool=null;
     for(const k of nameKeys(r.name)){ const c=idx.get(k+'|'+r.pos);
       if(c){ const fresh=c.filter(p=>!claimed.has(p.id)); if(fresh.length){ pool=fresh; break; } } }
