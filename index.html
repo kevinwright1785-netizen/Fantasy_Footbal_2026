@@ -609,6 +609,34 @@ const MANUAL_OVERRIDES = {"De'Von Achane":"Held to RB11 consensus \u2014 receivi
 const P = RAW.map((r,i)=>({id:i,n:r[0],pos:r[1],pts:r[2],adp:r[3],consensus:!!r[4],
                            sd:r[5]||Math.max(1,0.118*r[3]), bye:r[6]||0, tdShare:r[7]||0, override:MANUAL_OVERRIDES[r[0]]||null}));
 P.forEach(p=>{ p.alt = p.pos==='DST' ? (NICK[p.n.replace(' Defense','')]||'') : ''; });
+
+/* ---- ADP-implied fallback for blend failures ----
+   31 RB/WR came out of the blend at 0.0 because a source dropped them, not because
+   they project as nothing -- James Conner, Deebo Samuel, Travis Hunter, Tank Bigsby,
+   Xavier Legette and others. A 0.0 makes a player invisible to the recommender (it
+   filters pts<=0), which is most of why rounds 12-15 collapsed to "model has no
+   opinion": half the live names in that range had no number attached.
+
+   Rather than invent player-specific projections, take the market's own view: the
+   median of the nine nearest same-position players by ADP that DO carry a real blend.
+   Every one of these players sits at ADP 136+, so the estimate lands well below
+   replacement level and cannot smuggle anyone into a starting slot or inflate the
+   grade -- it only makes them rankable against each other late. Flagged est:true and
+   badged wherever it surfaces so it is never read as a real projection. */
+const EST_K = 9;
+(function fillBlendGaps(){
+  const real={};
+  for(const pos of ['QB','RB','WR','TE'])
+    real[pos]=P.filter(p=>p.pos===pos && p.pts>0).sort((a,b)=>a.adp-b.adp);
+  for(const p of P){
+    if(p.pts>0 || !real[p.pos] || !real[p.pos].length) continue;
+    const near=real[p.pos].slice()
+      .sort((a,b)=>Math.abs(a.adp-p.adp)-Math.abs(b.adp-p.adp))
+      .slice(0,EST_K).map(x=>x.pts).sort((a,b)=>a-b);
+    p.pts=+near[Math.floor(near.length/2)].toFixed(1);
+    p.est=true;
+  }
+})();
 const byId = Object.fromEntries(P.map(p=>[p.id,p]));
 
 let gone = new Set();   // drafted by anyone
@@ -629,15 +657,27 @@ function addCustom(name,pos,isMine){
 /* replacement level = the startable player you'd get off waivers */
 let FLEX_N = 2;   // your league has 2; Yahoo mocks default to 1
 const REPL_BY_FLEX = {
-  2:{QB:301.8, RB:150.0, WR:147.4, TE:120.5, K:137.0, DST:110.0},
-  1:{QB:301.8, RB:166.1, WR:164.2, TE:120.5, K:137.0, DST:110.0}
+  /* QB was 301.8 = QB12.5, i.e. it assumed every team rosters exactly one QB and the
+     13th is free. In a 12-team league with five bench spots roughly 16-18 QBs come off
+     the board, so the best genuinely free QB is about QB17 = 289.3. The old number
+     understated every QB's edge by ~12 points and, once the sd fix made the model
+     believe QBs would actually last, pushed the QB pick out to round 7-8. Measured:
+     QB round mean 7.1 -> 5.6, with lineup points flat-to-better on a fixed scorer.
+     TE was 120.5 (~TE14) for BOTH flex settings, which cannot be right -- a 2-flex
+     league starts more TEs than a 1-flex league, so replacement sits deeper. 1-flex
+     should be ~TE12 = 127.8. The shared number was inflating elite-TE value in 1-flex
+     enough to put McBride ahead of a 2nd RB in round 2. */
+  2:{QB:289.3, RB:150.0, WR:147.4, TE:120.5, K:137.0, DST:110.0},
+  1:{QB:289.3, RB:166.1, WR:164.2, TE:127.8, K:137.0, DST:110.0}
 };
-const CAL_BY_FLEX = { 2:{bench:1830.0, floor:1314.5}, 1:{bench:1640.0, floor:1249.0} };
-const REPL_UNUSED = (()=>{ const r={};
-  for (const [pos,n] of [['QB',13],['RB',35],['WR',38],['TE',13]]){
-    const s=P.filter(p=>p.pos===pos&&p.pts>0).sort((a,b)=>b.pts-a.pts);
-    r[pos]= s[Math.min(n-1,s.length-1)].pts;
-  } return r; })();
+const CAL_BY_FLEX = { 2:{bench:1830.0, floor:0}, 1:{bench:1640.0, floor:0} };
+/* floor = a roster of nothing: every starting slot filled at replacement. Derived from
+   REPL_BY_FLEX rather than hardcoded, so retuning a replacement level can't silently
+   desync the grade denominator (the old hardcoded 1314.5 was already 2.6 off). */
+for(const n of [1,2]){
+  const R=REPL_BY_FLEX[n];
+  CAL_BY_FLEX[n].floor = +(R.QB + 2*R.RB + 2*R.WR + R.TE + n*Math.max(R.RB,R.WR)).toFixed(1);
+}
 const TD_MED = (()=>{ const m={};
   for(const pos of ['QB','RB','WR','TE']){
     const v=P.filter(p=>p.pos===pos&&p.pts>0&&p.tdShare>0).map(p=>p.tdShare).sort((a,b)=>a-b);
@@ -657,17 +697,40 @@ function applyFlex(n){
 P.forEach(p=>{ p.vorp = +(p.pts - (REPL[p.pos]||0)).toFixed(1); });
 
 /* ---- probabilistic availability ----
-   Old model was binary: ADP before your pick => gone. Reality is a distribution.
-   survival(p, pick) = P(he is still on the board when you pick).  */
+   survival(p, pick) = P(he is still on the board when you pick).
+   Two corrections over the naive normal-around-ADP model:
+
+   1. SD INFLATION. The per-player sd in the dataset is the disagreement between the
+      three projection sources, not the pick-to-pick variance of a live draft room.
+      Real ADP spread for a top-20 player is roughly 8-12 picks; the raw numbers here
+      are 2-4. Left raw, survival() is a step function: it reported Pickens (ADP 22)
+      as 100% to last to 15 and Cook (ADP 10) as 1%, so the lookahead treated the
+      whole ADP 20-40 band as guaranteed and felt no urgency about anyone.
+
+   2. CONDITIONING ON THE BOARD. A player who is demonstrably still available has
+      falsified his ADP mean. Truncating (S(target)/S(now)) is the textbook fix but is
+      numerically useless here -- for a real faller it divides 1e-20 by 1e-15 and
+      still returns ~0. Instead re-centre the mean at the current board position.
+      Players sitting at or behind their ADP are untouched; only fallers move. */
+/* playOut end-states within this many points are statistically indistinguishable.
+   Used BOTH by the tie-break re-rank in recommend() and by the "Coin flip" badge in
+   renderRec, which previously disagreed (12 vs 15) about the same quantity. */
+const TIE_BAND = 12;
+const SD_INFLATE = 2.2;   // source-disagreement sd  ->  draft-room sd
+const SD_FLOOR   = 4.0;   // no player's ADP is tighter than ~4 picks in a real room
+function effSd(pl){ return Math.max(SD_FLOOR, SD_INFLATE*Math.max(pl.sd||1, 0.5)); }
+function boardNow(){ return gone.size + ghostGone + 1; }
 function erf(x){
   const s=x<0?-1:1; x=Math.abs(x);
   const a1=.254829592,a2=-.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,pp=.3275911;
   const t=1/(1+pp*x), y=1-(((((a5*t+a4)*t)+a3)*t+a2)*t+a1)*t*Math.exp(-x*x);
   return s*y;
 }
-function survival(pl, pick){
-  const sd=Math.max(pl.sd||1, 0.5);
-  return 1 - 0.5*(1+erf((pick-pl.adp)/(sd*Math.SQRT2)));
+function survival(pl, pick, from){
+  const now = from ?? boardNow();
+  if(pick <= now) return 1;                 // he is on the board right now; not a guess
+  const mu = Math.max(pl.adp, now);         // still here => the ADP mean was wrong
+  return 1 - 0.5*(1+erf((pick-mu)/(effSd(pl)*Math.SQRT2)));
 }
 
 function lineup(ids){
@@ -775,29 +838,40 @@ function recommend(){
   let scored=cands.map(c=>({p:c, sc:playOut(myIds.concat([c.id]), cur), now:lineup(myIds.concat([c.id]))}));
   // Primary sort: playOut end-state.
   scored.sort((a,b)=> (b.sc-a.sc) || (b.p.pts-a.p.pts));
-  // Tie-break correction: the greedy future tail in playOut can flip candidates that are
-  // effectively tied on end-state. When the top group is within the future-sim noise band,
-  // the present-lineup value is the more reliable signal, so re-rank that group by `now`.
-  // (Root cause: greedy expectedAt fills a hole-rich branch better than a hole-poor one,
-  //  making the lower-projected player look better on a close call. Present value doesn't lie.)
-  const NOISE = 12; // playOut end-state points within this are statistically indistinguishable
+  /* ---- tie-break correction ----
+     playOut's end-state carries a noisy greedy tail; `now` (present-lineup value) has
+     no future guessing in it and is the more reliable signal on a close call.
+
+     The previous version gated MEMBERSHIP on being within TIE_BAND of the max sc, then
+     re-sorted that set by `now`. That made the gate structural: a candidate 13-17 points
+     of sc back could hold the best present value in the whole pool and never be looked
+     at, because he failed a hard cutoff measured against a number that is itself noisy.
+     A cliff at exactly TIE_BAND is not a property of the data.
+
+     Instead every candidate is scored directly against the sc leader on one axis:
+
+         adj(x) = x.now - max(0, (topSc - x.sc) - TIE_BAND)
+
+     Inside TIE_BAND the sc deficit is indistinguishable from noise and costs nothing,
+     so present value decides outright. Past TIE_BAND the shoulder is linear: each
+     further point of sc deficit has to be bought with a point of present-lineup value.
+     No membership test, no cliff -- a player 15 back with +4 of present value wins,
+     a player 25 back with +1 does not. */
   if(scored.length>1){
-    const topSc = scored[0].sc;
-    const band = scored.filter(x=> topSc - x.sc <= NOISE);
-    // Only correct when candidates in the band actually differ on PRESENT-lineup value.
-    // That is the exact signature of the bug: a pick that changes your starting lineup now
-    // (e.g. filling your 2nd RB vs a WR) where the greedy future tail flipped the order.
-    // When present value is flat across the band (all bench/depth picks, late rounds), the
-    // starting lineup is set and this correction must NOT fire -- otherwise it would chase
-    // raw VORP into redundant depth (a 5th TE). Those picks keep the normal ordering.
-    const nowSpread = Math.max(...band.map(x=>x.now)) - Math.min(...band.map(x=>x.now));
-    if(band.length>1 && nowSpread > 1){
-      // Re-rank the band by present-lineup value (proven correct, no future guessing),
-      // then VORP, then raw points. Present value is the reliable signal for a pick that
-      // materially changes your starters; the noisy greedy tail is not.
-      band.sort((a,b)=> (b.now-a.now) || (b.p.vorp-a.p.vorp) || (b.p.pts-a.p.pts));
-      scored = [...band, ...scored.filter(x=>!band.includes(x))];
-    }
+    const top = scored[0], topSc = top.sc;
+    const adj = x => x.now - Math.max(0, (topSc - x.sc) - TIE_BAND);
+    // Rank the WHOLE list on the adjusted axis, not just the head. Promoting a single
+    // winner left the alternates panel in raw sc order, which showed a ranking that
+    // contradicted the logic that picked the winner (an RB with the best present value
+    // sitting at #8 behind two TEs). Where `now` is flat -- late depth picks, starters
+    // already set -- the penalty term grows with sc deficit and this collapses back to
+    // plain sc order, so it will not chase raw VORP into a redundant 5th TE.
+    const ranked = scored.slice().sort((a,b)=> (adj(b)-adj(a)) || (b.sc-a.sc));
+    // Materiality guard on the head: only let the sc leader be displaced when the
+    // challenger's PRESENT lineup is genuinely better, not merely rounding.
+    scored = (ranked[0]===top || ranked[0].now - top.now > 1)
+      ? ranked
+      : [top, ...ranked.filter(x => x!==top)];
   }
   return {rule:false, cur, list:scored};
 }
@@ -944,35 +1018,6 @@ function starters(){
   for(let i=0;i<FLEX_N;i++){const p=b[i];out.push({lab:'FLEX',p,pts:p?p.pts:Math.max(REPL.RB,REPL.WR),empty:!p});}
   return out;
 }
-function gradeHTML(){
-  renderGradeOut();
-}
-function renderGradeOut(){
-  const st=starters(), total=st.reduce((a,x)=>a+x.pts,0);
-  const CAL=CAL_BY_FLEX[FLEX_N];
-  const pct=(total-CAL.floor)/(CAL.bench-CAL.floor);
-  const L=[[1,'A+'],[.95,'A'],[.90,'A−'],[.85,'B+'],[.80,'B'],[.74,'B−'],[.68,'C+'],[.60,'C'],[.50,'C−'],[.40,'D'],[-9,'F']].find(b=>pct>=b[0])[1];
-  const vals=pickLog.map(x=>({p:byId[x.id],at:x.at})).filter(x=>x.p&&x.at)
-                    .map(x=>({n:x.p.n,gap:x.at-x.p.adp})).sort((a,b)=>b.gap-a.gap);
-  const holes=st.filter(x=>x.empty);
-  return `<div class="gradeWrap"><div class="gLetter">${L}</div><div>
-      <div class="gNum">${total.toFixed(0)} pts</div>
-      <div class="gSub">${(total/17).toFixed(1)} per week · ${(pct*100).toFixed(0)}% of what a model draft from pick 10 captures · ${FLEX_N} flex</div></div></div>
-    <div class="rowList" style="margin:14px -16px 0">
-      ${st.map(x=>`<div class="lrow"><span class="pos ${x.p?x.p.pos:''}">${x.lab}</span>
-        <span class="lname" ${x.empty?'style="color:var(--ink3);font-style:italic"':''}>${x.empty?'empty — waiver level':esc(x.p.n)}</span>
-        <span class="lnum">${x.pts.toFixed(1)}</span></div>`).join('')}
-    </div>
-    <div class="callouts" style="margin-top:14px">
-      ${holes.length?`<div class="co"><span class="dot"></span><div><b>${holes.length} slot${holes.length>1?'s':''} unfilled</b> (${holes.map(h=>h.lab).join(', ')}) — scored at waiver level.</div></div>`:''}
-      ${vals[0]&&vals[0].gap>0?`<div class="co"><span class="dot"></span><div><b>Best value:</b> ${esc(vals[0].n)}, ${vals[0].gap} picks past his ADP.</div></div>`:''}
-      ${vals.length&&vals[vals.length-1].gap<0?`<div class="co"><span class="dot"></span><div><b>Biggest reach:</b> ${esc(vals[vals.length-1].n)}, ${-vals[vals.length-1].gap} picks early.</div></div>`:''}
-      <div class="co"><span class="dot"></span><div>Grades how efficiently you drafted against July projections and market prices. It doesn't know your league and can't know what actually happens.</div></div>
-    </div>
-    <button class="btn danger" id="reset2" style="margin-top:14px">Start a new draft</button>`;
-}
-
-
 /* ---------- paste a Yahoo roster, match it to the dataset ---------- */
 const SUFFIX=new Set(['jr','sr','ii','iii','iv','v']);
 function nameKeys(full){
@@ -1179,8 +1224,10 @@ function renderRec(){
   const cur=currentPick(), R=document.getElementById('rec'),
         A=document.getElementById('alts'), AP=document.getElementById('altPanel');
   const rd=MY_PICKS.indexOf(cur)+1;
-  document.getElementById('recBadge').textContent = mine.size>=13?'Complete':('Round '+rd+' · Pick '+cur);
-  if(mine.size>=13){
+  // Was `mine.size>=13`, which declared the draft over with picks 159 (K) and 178 (DST)
+  // still to come and suppressed the K/DST rule card entirely. All 15 picks or nothing.
+  document.getElementById('recBadge').textContent = mine.size>=MY_PICKS.length?'Complete':('Round '+rd+' · Pick '+cur);
+  if(mine.size>=MY_PICKS.length){
     document.getElementById('recSub').textContent='Draft complete';
     document.getElementById('lowerGrid').style.gridTemplateColumns='1fr';
     R.innerHTML=`<div class="recName" style="font-size:24px">Draft complete</div>
@@ -1201,7 +1248,15 @@ function renderRec(){
   }
   const [a,b,c,d]=r.list;
   if(!a){R.innerHTML='<div class="recWhy">No players left in the pool.</div>';A.innerHTML='';return;}
-  const margin=b?(a.sc-b.sc):0, NOISE=15, thin=margin<NOISE;
+  // The tie-break re-rank in recommend() can promote a candidate whose end-state score
+  // is BELOW the runner-up's (that is the whole point of it: inside TIE_BAND the present
+  // lineup is the better signal). Left raw, a.sc-b.sc then goes negative and the card
+  // rendered "Edge over next best: -9.6 pts" and "−-9.6" in the alternates list.
+  // A negative raw margin means exactly one thing: these two are inside the noise band.
+  const rawMargin = b ? (a.sc-b.sc) : 0;
+  const tieBroken = rawMargin < 0;
+  const margin = Math.max(0, rawMargin);
+  const NOISE = TIE_BAND, thin = margin < NOISE;
 
   // Depth mode ("no pick improves your lineup") is only honest once every starting
   // slot is filled. While a QB/RB/WR/TE/FLEX slot is still empty, a pick DOES improve
@@ -1221,7 +1276,8 @@ function renderRec(){
     <div class="recMeta">
       <span class="badge b-gray">${a.p.pos}</span>
       <span class="badge b-gray">ADP ${a.p.adp}</span>
-      <span class="badge b-gray">${a.p.pts} proj</span>
+      <span class="badge b-gray">${a.p.est?'~'+a.p.pts.toFixed(0)+' est':a.p.pts+' proj'}</span>
+      ${a.p.est?'<span class="badge b-amber" title="No real blend for this player \u2014 this number is the median of nearby same-position ADPs, i.e. the market\'s view, not a projection">ADP-implied</span>':''}
       ${thin?'<span class="badge b-amber">Coin flip</span>':'<span class="badge b-green">Clear</span>'}
       ${a.p.consensus?'':'<span class="badge b-gray">1 source</span>'}
       ${a.p.bye?`<span class="badge b-gray">Bye ${a.p.bye}</span>`:''}
@@ -1242,12 +1298,13 @@ function renderRec(){
         return `<div class="mRow" style="margin-top:8px"><span>Touchdown-dependent</span>
         <b style="color:${t.high?'var(--amber)':t.low?'var(--green)':'var(--ink)'}">${Math.round(t.share*100)}% of projection${note}</b></div>`;})()}
       <div class="verdict">${thin?'Effectively a tie — take the one you believe in.':(margin>28?'Clear call.':'Real edge, not a landslide.')}</div>
+      ${tieBroken?'<div class="mFoot" style="margin-top:6px"><span>Order inside the tie set comes from present-lineup value, not the forward sim.</span></div>':''}
     </div>`;
   A.innerHTML=[b,c,d].filter(Boolean).map(x=>`<div class="lrow">
       <span class="pos ${x.p.pos}">${x.p.pos}</span>
       <span class="lname">${esc(x.p.n)}</span>
       <span class="lsub">${x.p.adp}</span>
-      <span class="lnum" style="width:56px;color:var(--ink2)">−${(a.sc-x.sc).toFixed(1)}</span></div>`).join('');
+      <span class="lnum" style="width:56px;color:var(--ink2)">${(()=>{const g=a.sc-x.sc; return g>0.05?'\u2212'+g.toFixed(1):'tie';})()}</span></div>`).join('');
 }
 
 const ROUNDS=[
@@ -1350,15 +1407,18 @@ function renderQuick(){
 
 function renderBoard(){
   const q=query.toLowerCase(), cur=currentPick();
+  // np must be declared before any code below reads it. It used to be declared at the
+  // bottom of this function while the row template read it, which put it in the
+  // temporal dead zone and threw ReferenceError whenever probableOnly was on.
+  const np=MY_PICKS.find(x=>x>cur);
   let list=P.filter(p=>(filterPos==='ALL'||p.pos===filterPos)&&(!q||p.n.toLowerCase().includes(q)||(p.alt&&p.alt.includes(q))));
   let ranks=null;
   if(sortMode==='ADP') list=list.slice().sort((a,b)=>a.adp-b.adp);
   else if(sortMode==='VALUE') list=list.slice().sort((a,b)=>b.vorp-a.vorp);
   else {
     ranks=myBoardRanks();
-    if(probableOnly){
-      const np=MY_PICKS.find(x=>x>cur);
-      if(np) list=list.filter(p=>!gone.has(p.id)&&survival(p,np)>=0.5);
+    if(probableOnly && np){
+      list=list.filter(p=>!gone.has(p.id)&&survival(p,np)>=0.5);
     }
     list=list.slice().sort((a,b)=>{
       const ra=ranks.get(a.id), rb=ranks.get(b.id);
@@ -1368,8 +1428,12 @@ function renderBoard(){
     });
   }
   list=list.slice(0, sortMode==='MINE'?200:150);
+  // Once the board has caught up to your pick, "chance he lasts to #cur" is 100% for
+  // everyone still listed -- they are sitting right there. Roll the reference forward
+  // to your NEXT pick at that point, which is the question you actually have.
+  const onClock = boardNow() >= cur;
+  const refPick = (probableOnly && np) ? np : ((onClock && np) ? np : cur);
   document.getElementById('board').innerHTML = list.length? list.map(p=>{
-    const refPick = (sortMode==='MINE'&&probableOnly&&np) ? np : cur;
     const pct=Math.round(survival(p,refPick)*100);
     const shade = gone.has(p.id) ? 'var(--ink3)' : (pct<25?'var(--rose)':pct<70?'var(--amber)':'var(--green)');
     const rk = ranks&&ranks.get(p.id) ? ranks.get(p.id).r : null;
@@ -1381,21 +1445,21 @@ function renderBoard(){
       </span>
       <span class="bMeta">
         <span class="lsub" data-l="ADP" title="average draft position">${p.adp}</span>
-        <span class="lsub" data-l="THERE" style="width:42px;color:${shade};font-weight:600" title="chance he lasts to your pick ${cur}">${gone.has(p.id)?'—':pct+'%'}</span>
-        <span class="lnum" style="width:52px" title="${p.pts>0?'projected season points':'no projection available'}">${p.pts>0?p.pts.toFixed(1):'<span style="color:var(--ink3);font-weight:400">n/a</span>'}</span>
+        <span class="lsub" data-l="THERE" style="width:42px;color:${shade};font-weight:600" title="chance he lasts to your pick #${refPick}">${gone.has(p.id)?'—':pct+'%'}</span>
+        <span class="lnum" style="width:52px" title="${p.est?'estimated from the median of nearby same-position ADPs \u2014 no real blend for this player':(p.pts>0?'projected season points':'no projection available')}">${p.pts>0?(p.est?`<span style="color:var(--ink3)">~${p.pts.toFixed(0)}</span>`:p.pts.toFixed(1)):'<span style="color:var(--ink3);font-weight:400">n/a</span>'}</span>
       </span>
       <span class="acts">
         <button class="mini ${gone.has(p.id)&&!mine.has(p.id)?'on':''}" data-g="${p.id}" aria-label="Mark ${esc(p.n)} drafted">Gone</button>
         <button class="mini ${mine.has(p.id)?'on':''}" data-m="${p.id}" aria-label="Mark ${esc(p.n)} as mine">Mine</button>
       </span></div>`;}).join('') : '<div class="empty">No players match.</div>';
-  const np=MY_PICKS.find(x=>x>cur);
   const th=document.getElementById('thereHead');
-  if(th) th.textContent = probableOnly&&np ? '#'+np : '#'+cur;
+  if(th) th.textContent = '#'+refPick;
   document.getElementById('boardNote').textContent =
     sortMode==='MINE' ? (probableOnly
         ? `Only players 50%+ likely to still be there at your next pick, #${np} \u2014 these are the ones you can wait on.`
         : `Full board through round 9, ranked by the recommendation math for your roster at pick ${cur}. Anyone missing from this list is 50%+ gone by #${np}.`)
   : sortMode==='VALUE'? 'Points above the waiver-level player at that position. Ignores your roster.'
+  : refPick!==cur ? `Market order. THERE% is the chance he lasts to your next pick, #${refPick}.`
   : 'Market order. Fastest way to find a name to tap off.';
 }
 
@@ -1451,7 +1515,7 @@ function renderRoster(){
     if(x.p) used.add(x.p.id);
     const edge=x.empty?null:(x.p.custom?null:x.pts-REPL[x.p.pos]);
     return `<div class="lrow"><span class="pos ${x.p?x.p.pos:''}">${x.lab}</span>
-      <span class="lname" ${x.empty?'style="color:var(--ink3);font-style:italic"':''}>${x.empty?'empty — waiver level':esc(x.p.n)}${x.p&&x.p.custom?' <span class="badge b-gray" style="font-size:10px">unlisted</span>':''}</span>
+      <span class="lname" ${x.empty?'style="color:var(--ink3);font-style:italic"':''}>${x.empty?'empty — waiver level':esc(x.p.n)}${x.p&&x.p.custom?' <span class="badge b-gray" style="font-size:10px">unlisted</span>':''}${x.p&&x.p.est?' <span class="badge b-amber" style="font-size:10px" title="ADP-implied estimate, not a real blend">est</span>':''}</span>
       <span class="lsub" style="width:44px">${x.p&&x.p.bye?'bye '+x.p.bye:''}</span>
       <span class="lsub" style="width:48px;color:${edge>40?'var(--green)':edge!==null&&edge<8?'var(--rose)':'var(--ink3)'}">${edge===null?'':(edge>=0?'+':'')+edge.toFixed(0)}</span>
       <span class="lnum">${x.pts.toFixed(1)}</span></div>`;}).join('')
@@ -1460,7 +1524,7 @@ function renderRoster(){
   const bench=[...mine].map(i=>byId[i]).filter(p=>!used.has(p.id)).sort((a,b)=>b.pts-a.pts);
   document.getElementById('rBench').innerHTML = bench.length? bench.map(p=>`
     <div class="lrow"><span class="pos ${p.pos}">${p.pos}</span>
-      <span class="lname">${esc(p.n)}${p.custom?' <span class="badge b-gray" style="font-size:10px">unlisted</span>':''}</span>
+      <span class="lname">${esc(p.n)}${p.custom?' <span class="badge b-gray" style="font-size:10px">unlisted</span>':''}${p.est?' <span class="badge b-amber" style="font-size:10px" title="ADP-implied estimate, not a real blend">est</span>':''}</span>
       <span class="lsub" style="width:44px">${p.bye?'bye '+p.bye:''}</span>
       <span class="lnum">${p.pts>0?p.pts.toFixed(1):'—'}</span></div>`).join('')
     : '<div class="empty">Nobody on the bench yet.</div>';
@@ -1827,7 +1891,7 @@ if(qqEl){
 document.getElementById('assumptions').innerHTML=
  `<b>How the call is made.</b> Every projection is scored in your settings — 0.5 per reception, 4-point passing TDs, −1 interceptions, 6-point rushing and receiving TDs, 10 yards per point, −2 fumbles. For each available player it adds him to your roster, searches your next three picks exhaustively, and scores the resulting QB/RB/RB/WR/WR/TE/FLEX/FLEX lineup.
   <br><br><b>Assumptions you can check.</b> Replacement level is QB13, RB35, WR38, TE13 — the player you'd get free off waivers. Availability at future picks uses each player's real ADP standard deviation from 1,889 half-PPR mock drafts (Aug 3–8), rescaled to Yahoo's ADP means.
-  <br><br><b>Coverage.</b> 267 players — all 32 team defenses and every kicker with a real ADP. 186 carry full projections, blended across three independent sources — the FantasyPros/FFToday consensus, ESPN's Mike Clay, and Yahoo's 8/14 consensus rankings (1/3 weight). Two players (Achane, Henry) carry a manual adjustment down to consensus, flagged “manual adj” on their card; the rest — deep handcuffs and late fliers from FFToday's Top 225 — are listed so you can mark them, but have no projection. They hold a roster slot and score at waiver level rather than getting invented numbers.
+  <br><br><b>Coverage.</b> 267 players — all 32 team defenses and every kicker with a real ADP. 186 carry full projections, blended across three independent sources — the FantasyPros/FFToday consensus, ESPN's Mike Clay, and Yahoo's 8/14 consensus rankings (1/3 weight). Two players (Achane, Henry) carry a manual adjustment down to consensus, flagged “manual adj” on their card; the rest — deep handcuffs and late fliers from FFToday's Top 225 — came back from the blend empty. Rather than leave them invisible to the recommender, each now carries an ADP-implied estimate: the median of the nine nearest same-position players by ADP that do have a real blend. Every one of them sits at ADP 136+, so the estimate lands below replacement level and can't reach a starting slot or move your grade — it only lets them be ranked against each other in rounds 12–15. They show a <b>~</b> on the board and an <b>est</b> badge on your roster. Kickers and defenses still carry no projection by design.
     <br><br>
     <b>Data vintage.</b> Projections late June to mid-July; Yahoo ADP 7/30. Camp news after those dates is not reflected. Ricky Pearsall removed 8/9 (out for season).`;
 
