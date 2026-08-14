@@ -769,8 +769,36 @@ function recommend(){
     if(haveQB && p.pos==='QB') return false;      // 2nd QB is dead weight on a 5-man bench
     return true;
   }).sort((a,b)=>b.vorp-a.vorp).slice(0,30);
-  const scored=cands.map(c=>({p:c, sc:playOut(myIds.concat([c.id]), cur)}))
-                    .sort((a,b)=> (b.sc-a.sc) || (b.p.pts-a.p.pts));
+  // Score each candidate by full lookahead, but keep BOTH signals:
+  //  - sc  = playOut end-state (has a noisy greedy tail that can misrank close calls)
+  //  - now = present-lineup value with this player added (proven correct, no future guessing)
+  let scored=cands.map(c=>({p:c, sc:playOut(myIds.concat([c.id]), cur), now:lineup(myIds.concat([c.id]))}));
+  // Primary sort: playOut end-state.
+  scored.sort((a,b)=> (b.sc-a.sc) || (b.p.pts-a.p.pts));
+  // Tie-break correction: the greedy future tail in playOut can flip candidates that are
+  // effectively tied on end-state. When the top group is within the future-sim noise band,
+  // the present-lineup value is the more reliable signal, so re-rank that group by `now`.
+  // (Root cause: greedy expectedAt fills a hole-rich branch better than a hole-poor one,
+  //  making the lower-projected player look better on a close call. Present value doesn't lie.)
+  const NOISE = 12; // playOut end-state points within this are statistically indistinguishable
+  if(scored.length>1){
+    const topSc = scored[0].sc;
+    const band = scored.filter(x=> topSc - x.sc <= NOISE);
+    // Only correct when candidates in the band actually differ on PRESENT-lineup value.
+    // That is the exact signature of the bug: a pick that changes your starting lineup now
+    // (e.g. filling your 2nd RB vs a WR) where the greedy future tail flipped the order.
+    // When present value is flat across the band (all bench/depth picks, late rounds), the
+    // starting lineup is set and this correction must NOT fire -- otherwise it would chase
+    // raw VORP into redundant depth (a 5th TE). Those picks keep the normal ordering.
+    const nowSpread = Math.max(...band.map(x=>x.now)) - Math.min(...band.map(x=>x.now));
+    if(band.length>1 && nowSpread > 1){
+      // Re-rank the band by present-lineup value (proven correct, no future guessing),
+      // then VORP, then raw points. Present value is the reliable signal for a pick that
+      // materially changes your starters; the noisy greedy tail is not.
+      band.sort((a,b)=> (b.now-a.now) || (b.p.vorp-a.p.vorp) || (b.p.pts-a.p.pts));
+      scored = [...band, ...scored.filter(x=>!band.includes(x))];
+    }
+  }
   return {rule:false, cur, list:scored};
 }
 
