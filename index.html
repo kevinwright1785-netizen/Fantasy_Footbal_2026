@@ -210,6 +210,20 @@ body{background:var(--bg);color:var(--ink);
 .slot{font-size:11.5px;font-weight:600;border:1px solid var(--line);border-radius:6px;
   padding:5px 8px;color:var(--ink3);background:var(--card)}
 .slot.on{border-color:transparent;color:var(--accent);background:var(--accent-bg)}
+/* Yahoo-style vertical lineup: one slot per row */
+.slots{flex-direction:column;gap:3px}
+.slotRow{display:flex;align-items:center;gap:9px;padding:6px 8px;border-radius:7px;
+  border:1px solid transparent}
+.slotRow.filled{background:var(--card);border-color:var(--line)}
+.slotRow.open{background:repeating-linear-gradient(45deg,var(--bg),var(--bg) 6px,transparent 6px,transparent 12px)}
+.slotPos{flex:0 0 42px;text-align:center;font-size:10.5px;font-weight:800;letter-spacing:.04em;
+  padding:3px 0;border-radius:5px;color:#fff;background:var(--ink3)}
+.slotPos.QB{background:#c2410c}.slotPos.RB{background:#15803d}.slotPos.WR{background:#1d4ed8}
+.slotPos.TE{background:#7c3aed}.slotPos.K{background:#64748b}.slotPos.DST{background:#0f766e}
+.slotPos.flex{background:linear-gradient(90deg,#15803d,#1d4ed8)}
+.slotName{flex:1;font-size:13px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.slotEmpty{color:var(--ink3);font-style:italic;font-weight:400}
+.slotPts{flex:0 0 auto;font-family:var(--mono,monospace);font-size:12px;font-weight:700;color:var(--ink2)}
 
 /* ---------- table (board) ---------- */
 .controls{display:flex;flex-direction:column;gap:10px;margin-bottom:12px}
@@ -225,6 +239,9 @@ input[type=search]:focus{outline:2px solid var(--accent);outline-offset:-1px;bor
 .cbtn[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:#fff}
 .cbtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .cbtn:disabled{opacity:.45;cursor:not-allowed}
+.qPosRow{display:flex;align-items:center;gap:5px;margin-top:9px;flex-wrap:wrap}
+.qPosLbl{font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--ink3);margin-right:2px}
+.cbtn.qpos{font-size:12px;padding:4px 9px;border-radius:6px}
 .colhead{display:flex;align-items:center;gap:10px;padding:9px 16px;background:var(--bg);
   border-bottom:1px solid var(--line);font-size:11px;font-weight:600;letter-spacing:.07em;
   text-transform:uppercase;color:var(--ink3)}
@@ -426,6 +443,10 @@ input[type=search]:focus{outline:2px solid var(--accent);outline-offset:-1px;bor
           <input type="search" id="qq" placeholder="Search to mark…" autocomplete="off"
                  autocorrect="off" autocapitalize="none" spellcheck="false" enterkeyhint="done">
           <div class="qHint">Enter marks <b>Gone</b> · Shift+Enter marks <b>Mine</b> · Esc clears</div>
+          <div class="qPosRow" id="qPosRow">
+            <span class="qPosLbl">Best available:</span>
+            ${['NEXT','RB','WR','TE','QB'].map(f=>`<button class="cbtn qpos" data-qpos="${f}" aria-pressed="${f==='NEXT'}">${f==='NEXT'?'Next up':f}</button>`).join('')}
+          </div>
         </div>
         <div class="rowList" id="quick"></div>
       </div>
@@ -592,7 +613,7 @@ input[type=search]:focus{outline:2px solid var(--accent);outline-offset:-1px;bor
   </div>
 </div>
 <script>
-const RAW = [["Jahmyr Gibbs","RB",335.3,1,1,0.4,6,0.309],["Bijan Robinson","RB",329.8,2,1,0.7,11,0.234],["Ja'Marr Chase","WR",274.3,3,1,0.7,6,0.235],["Puka Nacua","WR",281.3,4,1,1.2,11,0.219],["Jaxon Smith-Njigba","WR",264.3,6,1,0.8,11,0.201],["Christian McCaffrey","RB",298.7,5,1,1.4,8,0.265],["Jonathan Taylor","RB",282.7,7,1,1.6,13,0.296],["Amon-Ra St. Brown","WR",261.7,8,1,1.6,6,0.241],["CeeDee Lamb","WR",219.3,9,1,1.9,14,0.21],["James Cook","RB",255.6,10,1,2.1,7,0.292],["Justin Jefferson","WR",221.6,11,1,1.8,6,0.191],["Ashton Jeanty","RB",243.8,13,1,2.2,13,0.259],["Saquon Barkley","RB",243.0,12,1,2.7,10,0.26],["Drake London","WR",231.8,15,1,1.3,11,0.217],["Kenneth Walker","RB",238.6,14,1,2.7,5,0.259],["Chase Brown","RB",243.9,16,1,2.6,6,0.284],["Nico Collins","WR",209.8,19,1,2.1,8,0.218],["Brock Bowers","TE",198.2,21,1,4.0,13,0.223],["Omarion Hampton","RB",244.9,17,1,3.4,7,0.292],["De'Von Achane","RB",247.0,18,1,3.4,6,0.233],["Derrick Henry","RB",243.0,20,1,3.9,13,0.32],["George Pickens","WR",203.7,22,1,2.5,14,0.233],["DeVonta Smith","WR",195.2,24,1,2.8,10,0.188],["A.J. Brown","WR",207.7,23,1,3.2,11,0.214],["Trey McBride","TE",198.6,26,1,5.1,14,0.206],["Jeremiyah Love","RB",232.3,25,1,3.6,14,0.24],["Josh Allen","QB",378.7,27,1,5.9,7,0.521],["Tee Higgins","WR",183.2,28,1,2.7,6,0.289],["Chris Olave","WR",200.5,30,1,3.0,8,0.219],["Rashee Rice","WR",216.8,29,1,4.6,5,0.259],["Jaylen Waddle","WR",177.4,37,1,4.3,10,0.206],["Kyren Williams","RB",230.5,32,1,4.0,11,0.325],["Zay Flowers","WR",198.3,31,1,2.7,13,0.2],["Javonte Williams","RB",225.1,36,1,3.5,14,0.317],["Josh Jacobs","RB",241.8,34,1,3.2,11,0.318],["Breece Hall","RB",232.3,33,1,4.1,13,0.214],["Colston Loveland","TE",164.5,38,1,4.3,10,0.234],["Tetairoa McMillan","WR",187.2,39,1,3.7,5,0.202],["Garrett Wilson","WR",194.8,40,1,3.3,13,0.182],["Emeka Egbuka","WR",183.5,42,1,4.5,10,0.235],["Lamar Jackson","QB",333.2,48,1,7.1,13,0.445],["Ladd McConkey","WR",174.9,41,1,5.1,7,0.218],["Cam Skattebo","RB",221.8,45,1,4.9,8,0.28],["Terry McLaurin","WR",173.1,43,1,3.5,7,0.239],["Travis Etienne","RB",215.0,44,1,4.2,8,0.225],["Luther Burden III","WR",169.6,46,1,5.9,10,0.203],["D'Andre Swift","RB",194.3,47,1,5.4,10,0.254],["Davante Adams","WR",186.5,49,1,4.5,11,0.325],["Malik Nabers","WR",196.7,24,1,6.6,8,0.243],["Christian Watson","WR",168.1,53,1,5.0,11,0.263],["Jameson Williams","WR",182.1,54,1,5.0,6,0.228],["Quinshon Judkins","RB",203.2,51,1,6.4,11,0.258],["Joe Burrow","QB",319.2,61,1,5.6,6,0.515],["Rome Odunze","WR",174.4,52,1,5.6,10,0.267],["David Montgomery","RB",186.1,50,1,5.6,8,0.264],["Jayden Daniels","QB",328.5,62,1,7.5,7,0.419],["DJ Moore","WR",172.0,57,1,6.3,7,0.253],["Tyler Warren","TE",158.3,55,1,8.2,13,0.2],["Drake Maye","QB",335.9,59,1,7.9,11,0.463],["Bhayshul Tuten","RB",199.4,58,1,8.1,7,0.3],["Mike Evans","WR",164.9,56,1,5.9,8,0.245],["Bucky Irving","RB",206.2,60,1,6.7,10,0.251],["TreVeyon Henderson","RB",184.4,63,1,7.1,11,0.275],["Jalen Hurts","QB",325.2,64,1,6.2,10,0.495],["Brian Thomas Jr.","WR",144.5,70,1,7.2,7,0.226],["Jadarian Price","RB",178.8,65,1,7.3,11,0.3],["Parker Washington","WR",146.3,59,1,6.5,7,0.219],["Justin Herbert","QB",306.7,75,0,8.0,7,0.42],["Carnell Tate","WR",157.5,71,1,6.7,9,0.189],["Caleb Williams","QB",308.6,68,0,9.8,10,0.444],["Chuba Hubbard","RB",176.2,74,1,6.1,5,0.253],["Tucker Kraft","TE",137.1,75,1,12.2,11,0.254],["Marvin Harrison Jr.","WR",162.8,72,1,7.6,14,0.221],["Jaylen Warren","RB",175.1,73,1,6.7,9,0.229],["Rhamondre Stevenson","RB",170.6,69,1,6.0,11,0.28],["Trevor Lawrence","QB",308.5,79,1,10.9,7,0.484],["Tony Pollard","RB",178.2,76,1,8.1,9,0.212],["Alec Pierce","WR",168.8,78,1,7.1,13,0.209],["Sam LaPorta","TE",144.2,77,1,9.5,6,0.222],["DK Metcalf","WR",159.6,81,1,8.4,9,0.229],["Jordyn Tyson","WR",142.9,80,1,7.8,8,0.182],["Kyle Pitts","TE",148.1,85,1,9.0,11,0.175],["Dak Prescott","QB",308.4,86,1,10.6,14,0.488],["Rico Dowdle","RB",159.2,87,1,9.3,9,0.25],["Harold Fannin Jr.","TE",147.9,82,1,5.5,11,0.21],["Quentin Johnston","WR",140.9,83,1,7.2,7,0.284],["Chris Godwin","WR",146.0,88,1,9.2,10,0.213],["Makai Lemon","WR",143.4,91,1,8.3,10,0.205],["Blake Corum","RB",131.4,94,1,11.2,11,0.295],["Brock Purdy","QB",304.7,84,1,6.9,8,0.475],["Jaxson Dart","QB",312.4,93,1,12.8,8,0.442],["J.K. Dobbins","RB",163.4,95,1,10.5,10,0.27],["Courtland Sutton","WR",166.6,89,1,9.2,10,0.266],["Kyle Monangai","RB",145.6,90,1,10.4,10,0.217],["Jayden Reed","WR",145.4,101,1,8.1,11,0.202],["Jordan Addison","WR",140.2,92,1,9.5,6,0.239],["Denver Defense","DST",0.0,97,0,9.7,10,0],["Josh Downs","WR",134.8,98,1,8.0,13,0.184],["RJ Harvey","RB",152.6,100,1,10.5,10,0.305],["Jonathon Brooks","RB",131.1,77,1,14.9,5,0.25],["Bo Nix","QB",312.3,102,0,17.5,10,0.476],["George Kittle","TE",118.7,96,0,15.9,8,0.248],["Michael Wilson","WR",139.9,104,1,11.1,14,0.183],["Jordan Mason","RB",129.6,107,1,12.7,6,0.259],["Seattle Defense","DST",0.0,104,0,5.3,11,0],["Rachaad White","RB",151.8,103,1,12.1,7,0.278],["Kyler Murray","QB",291.6,106,0,9.8,6,0.413],["Dalton Kincaid","TE",125.4,110,0,12.2,7,0.249],["Michael Pittman Jr.","WR",155.4,105,1,8.8,9,0.196],["Patrick Mahomes","QB",301.9,109,0,14.4,5,0.458],["Xavier Worthy","WR",145.5,112,1,9.5,5,0.218],["Houston Defense","DST",0.0,110,0,9.7,8,0],["Kenny Gainwell","RB",141.5,108,1,11.2,10,0.246],["Jacory Croskey-Merritt","RB",137.1,115,1,12.3,7,0.33],["Isaiah Likely","TE",119.9,118,0,16.0,8,0.204],["Dallas Goedert","TE",135.4,117,1,17.1,10,0.299],["Matthew Stafford","QB",297.0,114,0,14.9,11,0.516],["Jakobi Meyers","WR",146.1,111,1,8.5,7,0.216],["Travis Kelce","TE",139.1,113,1,16.5,5,0.2],["Detroit Defense","DST",0.0,117,0,10.1,6,0],["Matthew Golden","WR",141.2,116,1,11.2,11,0.201],["Mark Andrews","TE",132.6,121,0,17.2,13,0.296],["Jared Goff","QB",299.3,119,0,16.7,6,0.489],["Minnesota Defense","DST",0.0,120,0,9.8,6,0],["Chris Rodriguez Jr.","RB",91.1,120,1,17.7,7,0.303],["Romeo Doubs","WR",137.5,125,1,9.4,11,0.231],["Jayden Higgins","WR",112.8,123,1,11.7,8,0.249],["KC Concepcion","WR",123.4,127,1,11.3,11,0.163],["Aaron Jones","RB",144.2,124,1,12.1,6,0.201],["John Metchie III","WR",129.7,126,1,10.9,5,0.278],["Jalen Coker","WR",127.8,122,1,12.5,5,0.222],["Theo Wease Jr.","WR",121.3,127,1,11.3,6,0.247],["Tyrone Tracy Jr.","RB",104.2,131,1,16.5,8,0.213],["Jordan Love","QB",280.5,128,0,14.7,11,0.46],["Wan'Dale Robinson","WR",141.6,126,1,11.5,9,0.157],["Brandon Aubrey","K",0.0,130,0,19.5,14,0],["Malik Willis","QB",275.4,129,0,16.8,6,0.34],["Baker Mayfield","QB",286.5,130,0,9.3,10,0.419],["Tyler Shough","QB",296.8,136,0,12.7,8,0.414],["Tyler Allgeier","RB",90.3,137,1,19.9,14,0.325],["Jake Ferguson","TE",125.1,135,0,16.1,14,0.242],["Stefon Diggs","WR",0.0,134,0,16.0,7,0],["New England Defense","DST",0.0,136,0,14.1,11,0],["Rashid Shaheed","WR",120.1,133,1,11.8,11,0.173],["LA Rams Defense","DST",0.0,137,0,18.2,11,0],["Chigoziem Okonkwo","TE",97.6,139,0,16.2,0,0.181],["Tyjae Spears","RB",113.3,144,1,14.7,9,0.207],["Jason Myers","K",0.0,141,0,19.1,11,0],["Isiah Pacheco","RB",101.1,149,1,17.3,6,0.222],["Cameron Dicker","K",0.0,142,0,14.5,7,0],["Zach Charbonnet","RB",111.9,140,1,27.1,11,0.295],["Woody Marks","RB",110.8,138,1,15.1,8,0.216],["Brian Robinson Jr.","RB",88.2,148,1,25.8,11,0.3],["Ka'imi Fairbairn","K",0.0,145,0,15.3,8,0],["Jake Bates","K",0.0,145,0,13.0,6,0],["Philadelphia Defense","DST",0.0,146,0,12.8,10,0],["Khalil Shakir","WR",136.7,143,1,9.3,7,0.181],["Eddy Pineiro","K",0.0,148,0,12.8,8,0],["Alvin Kamara","RB",106.9,145,1,23.4,8,0.21],["Cairo Santos","K",0.0,149,0,14.1,10,0],["Harrison Mevis","K",0.0,149,0,11.7,11,0],["Adonai Mitchell","WR",80.5,150,1,10.0,13,0.212],["Cooper Kupp","WR",92.8,151,1,19.0,11,0.201],["Tyler Loop","K",0.0,151,0,15.9,13,0],["Jalen Nailor","WR",104.5,146,1,18.5,13,0.253],["Tank Dell","WR",116.1,153,1,11.4,8,0.201],["LA Chargers Defense","DST",0.0,153,0,15.0,7,0],["Braelon Allen","RB",96.0,177,1,18.1,0,0.352],["Chase McLaughlin","K",0.0,154,0,16.8,10,0],["Jalen McMillan","WR",109.7,142,1,11.4,10,0.218],["Dylan Sampson","RB",91.0,161,1,18.4,0,0.215],["Brenton Strange","TE",109.5,152,0,17.1,7,0.225],["Keaton Mitchell","RB",0.0,132,0,18.5,7,0],["James Conner","RB",0.0,199,0,18.5,14,0],["Daniel Jones","QB",256.0,153,0,13.4,13,0.454],["Atlanta Defense","DST",0.0,158,0,16.5,11,0],["Oronde Gadsden","TE",99.2,159,0,18.7,0,0.248],["Jerry Jeudy","WR",131.1,178,1,11.8,11,0.147],["C.J. Stroud","QB",261.1,158,0,18.9,0,0.406],["Bryce Young","QB",251.1,168,0,10.1,5,0.477],["Deebo Samuel","WR",0.0,180,0,19.1,8,0],["Calvin Ridley","WR",128.5,202,1,11.0,9,0.182],["Buffalo Defense","DST",0.0,163,0,18.3,7,0],["Tank Bigsby","RB",0.0,141,0,19.4,10,0],["Tyler Bass","K",0.0,164,0,21.3,7,0],["Sam Darnold","QB",275.2,154,0,15.6,11,0.454],["Pittsburgh Defense","DST",0.0,165,0,13.1,9,0],["Tennessee Defense","DST",0.0,165,0,15.0,9,0],["Will Reichard","K",0.0,165,0,14.8,6,0],["Cam Little","K",0.0,165,0,18.1,7,0],["Tre Tucker","WR",117.5,175,1,9.9,13,0.204],["Baltimore Defense","DST",0.0,167,0,12.4,13,0],["Juwan Johnson","TE",114.8,165,0,20.7,8,0.156],["Hunter Henry","TE",118.3,163,0,21.0,11,0.25],["Wil Lutz","K",0.0,169,0,18.5,10,0],["Mike Washington Jr.","RB",0.0,193,0,20.3,13,0],["New Orleans Defense","DST",0.0,172,0,11.1,8,0],["Harrison Butker","K",0.0,172,0,17.7,5,0],["Evan McPherson","K",0.0,174,0,17.6,6,0],["Cam Ward","QB",244.7,162,0,20.4,9,0.39],["Omar Cooper Jr.","WR",0.0,166,0,20.6,13,0],["Chris Boswell","K",0.0,175,0,5.8,9,0],["Denzel Boston","WR",102.0,172,1,20.8,11,0.171],["Jauan Jennings","WR",99.8,170,1,14.8,6,0.284],["Rashod Bateman","WR",109.3,237,1,22.6,13,0.315],["Nick Folk","K",0.0,181,0,18.1,9,0],["Greg Dulcich","TE",111.6,186,0,21.7,0,0.215],["Malik Washington","WR",0.0,222,0,21.7,6,0],["Antonio Williams","WR",103.8,181,1,20.6,7,0.214],["Jacoby Brissett","QB",238.9,216,0,22.1,0,0.395],["MarShawn Lloyd","RB",0.0,192,0,22.2,11,0],["Justice Hill","RB",94.6,219,1,3.9,13,0.243],["Kimani Vidal","RB",0.0,226,0,22.4,7,0],["Jordan James","RB",89.2,217,1,11.1,8,0.274],["Sean Tucker","RB",0.0,214,0,22.8,10,0],["Samaje Perine","RB",87.6,195,1,23.0,0,0.281],["Ty Johnson","RB",84.3,198,1,23.3,0,0.299],["George Holani","RB",0.0,212,0,23.4,11,0],["AJ Barner","TE",109.7,190,0,23.5,0,0.252],["Travis Hunter","WR",0.0,156,0,23.7,7,0],["Pat Freiermuth","TE",108.2,204,0,24.0,0,0.265],["De'Zhaun Stribling","WR",0.0,195,0,24.1,8,0],["T.J. Hockenson","TE",109.8,200,0,24.1,0,0.173],["Kaytron Allen","RB",0.0,173,0,24.2,7,0],["Terrance Ferguson","TE",90.2,208,0,24.2,0,0.277],["Kenyon Sadiq","TE",92.7,197,0,24.5,0,0.156],["Cade Otton","TE",99.9,210,0,24.7,0,0.186],["Mike Gesicki","TE",90.5,212,0,25.0,0,0.265],["Evan Engram","TE",90.6,214,0,25.2,0,0.19],["Mason Taylor","TE",71.0,216,0,25.4,0,0.141],["Ray Davis","RB",0.0,167,0,25.4,7,0],["Jaydon Blue","RB",0.0,184,0,25.5,14,0],["Tre Harris","WR",0.0,203,0,25.6,7,0],["Michael Mayer","TE",81.5,218,0,25.7,0,0.221],["Cole Kmet","TE",72.9,220,0,25.9,0,0.247],["David Njoku","TE",70.8,222,0,26.1,0,0.265],["Isaac TeSlaa","WR",0.0,191,0,26.7,6,0],["Caleb Douglas","WR",0.0,230,0,27.1,6,0],["Dalton Schultz","TE",110.1,205,0,27.4,0,0.155],["Emari Demercado","RB",0.0,235,0,27.7,5,0],["Xavier Legette","WR",0.0,235,0,27.7,5,0],["Jaylen Wright","RB",0.0,234,0,28.0,6,0],["Andrei Iosivas","WR",0.0,240,0,28.3,6,0],["Ryan Flournoy","WR",0.0,169,0,28.7,14,0],["Darius Slayton","WR",0.0,245,0,28.9,8,0],["Tyquan Thornton","WR",0.0,248,0,29.3,5,0],["KaVontae Turpin","WR",0.0,250,0,29.5,14,0],["Isaiah Davis","RB",0.0,213,0,29.5,13,0],["Ollie Gordon II","RB",0.0,228,0,29.5,6,0],["Arizona Defense","DST",0.0,250,0,25.0,14,0],["Carolina Defense","DST",0.0,250,0,25.0,5,0],["Chicago Defense","DST",0.0,250,0,25.0,10,0],["Cincinnati Defense","DST",0.0,250,0,25.0,6,0],["Cleveland Defense","DST",0.0,250,0,25.0,11,0],["Dallas Defense","DST",0.0,250,0,25.0,14,0],["Green Bay Defense","DST",0.0,250,0,25.0,11,0],["Indianapolis Defense","DST",0.0,250,0,25.0,13,0],["Jacksonville Defense","DST",0.0,250,0,25.0,7,0],["Kansas City Defense","DST",0.0,250,0,25.0,5,0],["Las Vegas Defense","DST",0.0,250,0,25.0,13,0],["Miami Defense","DST",0.0,250,0,25.0,6,0],["NY Giants Defense","DST",0.0,250,0,25.0,8,0],["NY Jets Defense","DST",0.0,250,0,25.0,13,0],["San Francisco Defense","DST",0.0,250,0,25.0,8,0],["Tampa Bay Defense","DST",0.0,250,0,25.0,10,0],["Washington Defense","DST",0.0,250,0,25.0,7,0],["Germie Bernard","WR",0.0,257,0,30.3,9,0]];
+const RAW = [["Jahmyr Gibbs","RB",330.1,1,1,0.4,6,0.319],["Bijan Robinson","RB",322.8,2,1,0.7,11,0.239],["Ja'Marr Chase","WR",281.9,3,1,0.7,6,0.234],["Puka Nacua","WR",289.3,4,1,1.2,11,0.218],["Jaxon Smith-Njigba","WR",271.3,5,1,0.8,11,0.212],["Christian McCaffrey","RB",303.8,6,1,1.4,8,0.278],["Jonathan Taylor","RB",287.5,7,1,1.6,13,0.298],["Amon-Ra St. Brown","WR",266.4,8,1,1.6,6,0.241],["CeeDee Lamb","WR",234.9,9,1,1.9,14,0.201],["James Cook","RB",263.1,10,1,2.1,7,0.289],["Justin Jefferson","WR",230.2,11,1,1.8,6,0.185],["Ashton Jeanty","RB",248.2,12,1,2.2,13,0.276],["Saquon Barkley","RB",253.9,13,1,2.7,10,0.252],["Drake London","WR",228.5,14,1,1.3,11,0.237],["Kenneth Walker","RB",239.5,15,1,2.7,5,0.249],["Chase Brown","RB",244.7,16,1,2.6,6,0.279],["Nico Collins","WR",214.6,17,1,2.1,8,0.222],["Brock Bowers","TE",196.1,18,1,4.0,13,0.23],["Omarion Hampton","RB",246.6,19,1,3.4,7,0.302],["De'Von Achane","RB",247.0,20,1,3.4,6,0.233],["Derrick Henry","RB",243.0,21,1,3.9,13,0.32],["George Pickens","WR",210.9,22,1,2.5,14,0.239],["DeVonta Smith","WR",198.0,23,1,2.8,10,0.187],["A.J. Brown","WR",209.6,24,1,3.2,11,0.215],["Trey McBride","TE",198.5,25,1,5.1,14,0.204],["Jeremiyah Love","RB",232.5,26,1,3.6,14,0.244],["Josh Allen","QB",375.9,27,1,5.9,7,0.485],["Tee Higgins","WR",189.2,28,1,2.7,6,0.293],["Chris Olave","WR",200.7,29,1,3.0,8,0.223],["Rashee Rice","WR",220.6,30,1,4.6,5,0.284],["Jaylen Waddle","WR",180.8,31,1,4.3,10,0.204],["Kyren Williams","RB",230.4,32,1,4.0,11,0.331],["Zay Flowers","WR",200.9,33,1,2.7,13,0.207],["Javonte Williams","RB",229.3,34,1,3.5,14,0.324],["Josh Jacobs","RB",249.3,35,1,3.2,11,0.331],["Breece Hall","RB",237.4,36,1,4.1,13,0.227],["Colston Loveland","TE",168.1,37,1,4.3,10,0.236],["Tetairoa McMillan","WR",189.2,38,1,3.7,5,0.204],["Garrett Wilson","WR",194.4,39,1,3.3,13,0.196],["Emeka Egbuka","WR",182.5,40,1,4.5,10,0.24],["Lamar Jackson","QB",332.4,41,1,7.1,13,0.408],["Ladd McConkey","WR",177.6,42,1,5.1,7,0.221],["Cam Skattebo","RB",220.5,43,1,4.9,8,0.287],["Terry McLaurin","WR",178.5,44,1,3.5,7,0.247],["Travis Etienne","RB",220.1,45,1,4.2,8,0.235],["Luther Burden III","WR",170.9,46,1,5.9,10,0.197],["D'Andre Swift","RB",189.4,47,1,5.4,10,0.264],["Davante Adams","WR",186.7,48,1,4.5,11,0.326],["Malik Nabers","WR",200.0,49,1,6.6,8,0.254],["Christian Watson","WR",165.8,50,1,5.0,11,0.273],["Jameson Williams","WR",179.1,51,1,5.0,6,0.23],["Quinshon Judkins","RB",208.1,52,1,6.4,11,0.263],["Joe Burrow","QB",318.1,53,1,5.6,6,0.455],["Rome Odunze","WR",177.1,54,1,5.6,10,0.276],["David Montgomery","RB",187.7,55,1,5.6,8,0.265],["Jayden Daniels","QB",327.3,56,1,7.5,7,0.384],["DJ Moore","WR",172.0,57,1,6.3,7,0.253],["Tyler Warren","TE",161.1,58,1,8.2,13,0.202],["Drake Maye","QB",332.4,59,1,7.9,11,0.414],["Bhayshul Tuten","RB",195.5,60,1,8.1,7,0.32],["Mike Evans","WR",161.3,61,1,5.9,8,0.245],["Bucky Irving","RB",204.5,62,1,6.7,10,0.247],["TreVeyon Henderson","RB",186.9,63,1,7.1,11,0.279],["Jalen Hurts","QB",323.9,64,1,6.2,10,0.459],["Brian Thomas Jr.","WR",147.0,65,1,7.2,7,0.232],["Jadarian Price","RB",183.3,66,1,7.3,11,0.309],["Parker Washington","WR",148.3,67,1,6.5,7,0.223],["Justin Herbert","QB",303.6,68,0,8.0,7,0.371],["Carnell Tate","WR",161.7,69,1,6.7,9,0.183],["Caleb Williams","QB",304.9,70,0,9.8,10,0.39],["Chuba Hubbard","RB",178.5,71,1,6.1,5,0.257],["Tucker Kraft","TE",140.2,72,1,12.2,11,0.266],["Marvin Harrison Jr.","WR",163.6,73,1,7.6,14,0.22],["Jaylen Warren","RB",172.2,74,1,6.7,9,0.228],["Rhamondre Stevenson","RB",174.5,75,1,6.0,11,0.291],["Trevor Lawrence","QB",306.7,76,1,10.9,7,0.447],["Tony Pollard","RB",176.7,77,1,8.1,9,0.219],["Alec Pierce","WR",170.9,78,1,7.1,13,0.222],["Sam LaPorta","TE",148.8,79,1,9.5,6,0.222],["DK Metcalf","WR",157.5,80,1,8.4,9,0.233],["Jordyn Tyson","WR",147.9,81,1,7.8,8,0.183],["Kyle Pitts","TE",148.3,82,1,9.0,11,0.181],["Dak Prescott","QB",305.0,83,1,10.6,14,0.437],["Rico Dowdle","RB",163.1,84,1,9.3,9,0.256],["Harold Fannin Jr.","TE",147.5,85,1,5.5,11,0.214],["Quentin Johnston","WR",145.5,86,1,7.2,7,0.289],["Chris Godwin","WR",148.1,87,1,9.2,10,0.214],["Makai Lemon","WR",143.4,88,1,8.3,10,0.205],["Blake Corum","RB",134.1,90,1,11.2,11,0.299],["Brock Purdy","QB",298.5,91,1,6.9,8,0.438],["Jaxson Dart","QB",311.0,92,1,12.8,8,0.416],["J.K. Dobbins","RB",162.5,93,1,10.5,10,0.26],["Courtland Sutton","WR",170.7,94,1,9.2,10,0.266],["Kyle Monangai","RB",154.6,95,1,10.4,10,0.232],["Jayden Reed","WR",142.4,96,1,8.1,11,0.204],["Jordan Addison","WR",142.2,97,1,9.5,6,0.248],["Denver Defense","DST",0.0,97,0,9.7,10,0],["Josh Downs","WR",131.9,98,1,8.0,13,0.191],["RJ Harvey","RB",156.9,99,1,10.5,10,0.312],["Jonathon Brooks","RB",138.2,100,1,14.9,5,0.247],["Bo Nix","QB",307.4,101,0,17.5,10,0.426],["George Kittle","TE",116.1,102,0,15.9,8,0.251],["Michael Wilson","WR",140.3,103,1,11.1,14,0.188],["Jordan Mason","RB",131.8,104,1,12.7,6,0.269],["Seattle Defense","DST",0.0,104,0,5.3,11,0],["Rachaad White","RB",150.8,105,1,12.1,7,0.28],["Kyler Murray","QB",284.3,106,0,9.8,6,0.365],["Dalton Kincaid","TE",127.8,107,0,12.2,7,0.249],["Michael Pittman Jr.","WR",155.2,108,1,8.8,9,0.198],["Patrick Mahomes","QB",297.5,109,0,14.4,5,0.398],["Xavier Worthy","WR",148.4,110,1,9.5,5,0.219],["Houston Defense","DST",0.0,110,0,9.7,8,0],["Kenny Gainwell","RB",141.5,111,1,11.2,10,0.246],["Jacory Croskey-Merritt","RB",140.2,112,1,12.3,7,0.334],["Isaiah Likely","TE",121.1,113,0,16.0,8,0.204],["Dallas Goedert","TE",139.3,114,1,17.1,10,0.308],["Matthew Stafford","QB",293.5,115,0,14.9,11,0.448],["Jakobi Meyers","WR",147.4,116,1,8.5,7,0.219],["Travis Kelce","TE",139.9,117,1,16.5,5,0.213],["Detroit Defense","DST",0.0,117,0,10.1,6,0],["Matthew Golden","WR",141.2,118,1,11.2,11,0.201],["Mark Andrews","TE",133.4,119,0,17.2,13,0.307],["Jared Goff","QB",293.3,120,0,16.7,6,0.425],["Minnesota Defense","DST",0.0,120,0,9.8,6,0],["Chris Rodriguez Jr.","RB",90.5,121,1,17.7,7,0.325],["Romeo Doubs","WR",138.8,122,1,9.4,11,0.235],["Jayden Higgins","WR",112.8,123,1,11.7,8,0.249],["KC Concepcion","WR",123.4,124,1,11.3,11,0.163],["Aaron Jones","RB",151.5,125,1,12.1,6,0.209],["John Metchie III","WR",129.7,126,1,10.9,5,0.278],["Jalen Coker","WR",127.8,127,1,12.5,5,0.222],["Theo Wease Jr.","WR",121.3,127,1,11.3,6,0.247],["Tyrone Tracy Jr.","RB",100.0,128,1,16.5,8,0.213],["Jordan Love","QB",279.4,129,0,14.7,11,0.403],["Wan'Dale Robinson","WR",141.3,130,1,11.5,9,0.151],["Brandon Aubrey","K",0.0,130,0,19.5,14,0],["Malik Willis","QB",269.2,131,0,16.8,6,0.312],["Baker Mayfield","QB",285.4,132,0,9.3,10,0.369],["Tyler Shough","QB",289.3,133,0,12.7,8,0.371],["Tyler Allgeier","RB",90.3,135,1,19.9,14,0.325],["Jake Ferguson","TE",125.6,136,0,16.1,14,0.242],["Stefon Diggs","WR",0.0,136,0,16.0,7,0],["New England Defense","DST",0.0,136,0,14.1,11,0],["Rashid Shaheed","WR",120.1,137,1,11.8,11,0.173],["LA Rams Defense","DST",0.0,137,0,18.2,11,0],["Chigoziem Okonkwo","TE",98.0,138,0,16.2,0,0.178],["Tyjae Spears","RB",121.5,139,1,14.7,9,0.217],["Jason Myers","K",0.0,141,0,19.1,11,0],["Isiah Pacheco","RB",106.3,142,1,17.3,6,0.234],["Cameron Dicker","K",0.0,142,0,14.5,7,0],["Zach Charbonnet","RB",117.5,143,1,27.1,11,0.324],["Woody Marks","RB",113.4,144,1,15.1,8,0.239],["Brian Robinson Jr.","RB",88.2,145,1,25.8,11,0.3],["Ka'imi Fairbairn","K",0.0,145,0,15.3,8,0],["Jake Bates","K",0.0,145,0,13.0,6,0],["Philadelphia Defense","DST",0.0,146,0,12.8,10,0],["Khalil Shakir","WR",136.7,147,1,9.3,7,0.184],["Eddy Pineiro","K",0.0,148,0,12.8,8,0],["Alvin Kamara","RB",106.7,149,1,23.4,8,0.203],["Cairo Santos","K",0.0,149,0,14.1,10,0],["Harrison Mevis","K",0.0,149,0,11.7,11,0],["Adonai Mitchell","WR",80.5,150,1,10.0,13,0.212],["Cooper Kupp","WR",92.8,151,1,19.0,11,0.201],["Tyler Loop","K",0.0,151,0,15.9,13,0],["Jalen Nailor","WR",104.5,152,1,18.5,13,0.253],["Tank Dell","WR",116.1,153,1,11.4,8,0.201],["LA Chargers Defense","DST",0.0,153,0,15.0,7,0],["Braelon Allen","RB",96.0,154,1,18.1,0,0.352],["Chase McLaughlin","K",0.0,154,0,16.8,10,0],["Jalen McMillan","WR",109.7,155,1,11.4,10,0.218],["Dylan Sampson","RB",89.5,156,1,18.4,0,0.227],["Brenton Strange","TE",110.9,157,0,17.1,7,0.225],["Keaton Mitchell","RB",0.0,157,0,18.5,7,0],["James Conner","RB",0.0,157,0,18.5,14,0],["Daniel Jones","QB",245.4,158,0,13.4,13,0.422],["Atlanta Defense","DST",0.0,158,0,16.5,11,0],["Oronde Gadsden","TE",100.5,159,0,18.7,0,0.248],["Jerry Jeudy","WR",131.1,160,1,11.8,11,0.147],["C.J. Stroud","QB",260.6,161,0,18.9,0,0.357],["Bryce Young","QB",247.1,162,0,10.1,5,0.426],["Deebo Samuel","WR",0.0,162,0,19.1,8,0],["Calvin Ridley","WR",128.5,163,1,11.0,9,0.182],["Buffalo Defense","DST",0.0,163,0,18.3,7,0],["Tank Bigsby","RB",0.0,164,0,19.4,10,0],["Tyler Bass","K",0.0,164,0,21.3,7,0],["Sam Darnold","QB",269.0,165,0,15.6,11,0.4],["Pittsburgh Defense","DST",0.0,165,0,13.1,9,0],["Tennessee Defense","DST",0.0,165,0,15.0,9,0],["Will Reichard","K",0.0,165,0,14.8,6,0],["Cam Little","K",0.0,165,0,18.1,7,0],["Tre Tucker","WR",117.5,166,1,9.9,13,0.204],["Baltimore Defense","DST",0.0,167,0,12.4,13,0],["Juwan Johnson","TE",114.4,168,0,20.7,8,0.156],["Hunter Henry","TE",117.5,169,0,21.0,11,0.25],["Wil Lutz","K",0.0,169,0,18.5,10,0],["Mike Washington Jr.","RB",0.0,172,0,20.3,13,0],["New Orleans Defense","DST",0.0,172,0,11.1,8,0],["Harrison Butker","K",0.0,172,0,17.7,5,0],["Evan McPherson","K",0.0,174,0,17.6,6,0],["Cam Ward","QB",242.4,175,0,20.4,9,0.344],["Omar Cooper Jr.","WR",0.0,175,0,20.6,13,0],["Chris Boswell","K",0.0,175,0,5.8,9,0],["Denzel Boston","WR",102.0,177,1,20.8,11,0.171],["Jauan Jennings","WR",99.8,179,1,14.8,6,0.284],["Rashod Bateman","WR",109.3,180,1,22.6,13,0.315],["Nick Folk","K",0.0,181,0,18.1,9,0],["Greg Dulcich","TE",111.6,184,0,21.7,0,0.215],["Malik Washington","WR",0.0,184,0,21.7,6,0],["Antonio Williams","WR",103.8,186,1,20.6,7,0.214],["Jacoby Brissett","QB",235.6,188,0,22.1,0,0.348],["MarShawn Lloyd","RB",0.0,188,0,22.2,11,0],["Justice Hill","RB",94.6,190,1,3.9,13,0.243],["Kimani Vidal","RB",0.0,190,0,22.4,7,0],["Jordan James","RB",89.2,192,1,11.1,8,0.274],["Sean Tucker","RB",0.0,193,0,22.8,10,0],["Samaje Perine","RB",87.6,195,1,23.0,0,0.281],["Ty Johnson","RB",83.1,198,1,23.3,0,0.31],["George Holani","RB",0.0,198,0,23.4,11,0],["AJ Barner","TE",113.8,200,0,23.5,0,0.26],["Travis Hunter","WR",0.0,201,0,23.7,7,0],["Pat Freiermuth","TE",105.7,204,0,24.0,0,0.265],["De'Zhaun Stribling","WR",0.0,204,0,24.1,8,0],["T.J. Hockenson","TE",112.6,205,0,24.1,0,0.173],["Kaytron Allen","RB",0.0,205,0,24.2,7,0],["Terrance Ferguson","TE",92.1,206,0,24.2,0,0.277],["Kenyon Sadiq","TE",100.5,208,0,24.5,0,0.156],["Cade Otton","TE",101.3,210,0,24.7,0,0.186],["Mike Gesicki","TE",90.5,212,0,25.0,0,0.265],["Evan Engram","TE",88.4,214,0,25.2,0,0.19],["Mason Taylor","TE",63.9,216,0,25.4,0,0.141],["Ray Davis","RB",0.0,216,0,25.4,7,0],["Jaydon Blue","RB",0.0,216,0,25.5,14,0],["Tre Harris","WR",0.0,217,0,25.6,7,0],["Michael Mayer","TE",81.5,218,0,25.7,0,0.221],["Cole Kmet","TE",72.9,220,0,25.9,0,0.247],["David Njoku","TE",75.5,222,0,26.1,0,0.251],["Isaac TeSlaa","WR",0.0,226,0,26.7,6,0],["Caleb Douglas","WR",0.0,230,0,27.1,6,0],["Dalton Schultz","TE",107.1,233,0,27.4,0,0.155],["Emari Demercado","RB",0.0,235,0,27.7,5,0],["Xavier Legette","WR",0.0,235,0,27.7,5,0],["Jaylen Wright","RB",0.0,237,0,28.0,6,0],["Andrei Iosivas","WR",0.0,240,0,28.3,6,0],["Ryan Flournoy","WR",0.0,244,0,28.7,14,0],["Darius Slayton","WR",0.0,245,0,28.9,8,0],["Tyquan Thornton","WR",0.0,248,0,29.3,5,0],["KaVontae Turpin","WR",0.0,250,0,29.5,14,0],["Isaiah Davis","RB",0.0,250,0,29.5,13,0],["Ollie Gordon II","RB",0.0,250,0,29.5,6,0],["Arizona Defense","DST",0.0,250,0,25.0,14,0],["Carolina Defense","DST",0.0,250,0,25.0,5,0],["Chicago Defense","DST",0.0,250,0,25.0,10,0],["Cincinnati Defense","DST",0.0,250,0,25.0,6,0],["Cleveland Defense","DST",0.0,250,0,25.0,11,0],["Dallas Defense","DST",0.0,250,0,25.0,14,0],["Green Bay Defense","DST",0.0,250,0,25.0,11,0],["Indianapolis Defense","DST",0.0,250,0,25.0,13,0],["Jacksonville Defense","DST",0.0,250,0,25.0,7,0],["Kansas City Defense","DST",0.0,250,0,25.0,5,0],["Las Vegas Defense","DST",0.0,250,0,25.0,13,0],["Miami Defense","DST",0.0,250,0,25.0,6,0],["NY Giants Defense","DST",0.0,250,0,25.0,8,0],["NY Jets Defense","DST",0.0,250,0,25.0,13,0],["San Francisco Defense","DST",0.0,250,0,25.0,8,0],["Tampa Bay Defense","DST",0.0,250,0,25.0,10,0],["Washington Defense","DST",0.0,250,0,25.0,7,0],["Germie Bernard","WR",0.0,257,0,30.3,9,0]];
 
 const MY_PICKS = [10,15,34,39,58,63,82,87,106,111,130,135,154,159,178];
 const LAST_TWO = [159,178];
@@ -605,13 +626,9 @@ const NICK={'Arizona':'cardinals','Atlanta':'falcons','Baltimore':'ravens','Buff
 'New Orleans':'saints','NY Giants':'giants','NY Jets':'jets','Philadelphia':'eagles',
 'Pittsburgh':'steelers','Seattle':'seahawks','San Francisco':'49ers niners','Tampa Bay':'buccaneers bucs',
 'Tennessee':'titans','Washington':'commanders'};
-const REFRESHED_816 = new Set(["Jahmyr Gibbs","Bijan Robinson","Christian McCaffrey","Jonathan Taylor",
-  "James Cook","Ashton Jeanty","Chase Brown","Saquon Barkley","Puka Nacua",
-  "Ja'Marr Chase","Jaxon Smith-Njigba","Amon-Ra St. Brown","Drake London","CeeDee Lamb","Rashee Rice",
-  "Justin Jefferson","A.J. Brown","George Pickens"]);
 const MANUAL_OVERRIDES = {"De'Von Achane":"Held to RB11 consensus \u2014 receiving regression risk with Willis at QB","Derrick Henry":"Held to RB12 consensus \u2014 age 32, TD-dependent"};
 const P = RAW.map((r,i)=>({id:i,n:r[0],pos:r[1],pts:r[2],adp:r[3],consensus:!!r[4],
-                           sd:r[5]||Math.max(1,0.118*r[3]), bye:r[6]||0, tdShare:r[7]||0, override:MANUAL_OVERRIDES[r[0]]||null, fresh:REFRESHED_816.has(r[0])}));
+                           sd:r[5]||Math.max(1,0.118*r[3]), bye:r[6]||0, tdShare:r[7]||0, override:MANUAL_OVERRIDES[r[0]]||null}));
 P.forEach(p=>{ p.alt = p.pos==='DST' ? (NICK[p.n.replace(' Defense','')]||'') : ''; });
 
 /* ---- ADP-implied fallback for blend failures ----
@@ -836,6 +853,25 @@ function recommend(){
     if(haveQB && p.pos==='QB') return false;      // 2nd QB is dead weight on a 5-man bench
     return true;
   }).sort((a,b)=>b.vorp-a.vorp).slice(0,30);
+
+  // ---- WR-by-round-4 guard ----
+  // A pure RB open (RB-RB-RB-RB) lets WR talent slip too far -- the WR tier cliffs while
+  // you're stacking a fourth RB you may never start. Enforce at least one WR in the first
+  // four rounds: if we're at pick 4 with zero WRs rostered, the recommendation must be the
+  // best available WR. (Rounds 1-3 stay unconstrained so an elite RB run isn't blocked.)
+  const roundNow0 = MY_PICKS.indexOf(cur)+1;
+  const myWR0 = myIds.filter(i=>byId[i].pos==='WR').length;
+  if(roundNow0===4 && myWR0===0){
+    const bestWR = cands.filter(c=>c.pos==='WR')
+      .map(c=>({p:c, sc:playOut(myIds.concat([c.id]),cur), now:lineup(myIds.concat([c.id]))}))
+      .sort((a,b)=>(b.sc-a.sc)||(b.p.pts-a.p.pts))[0];
+    if(bestWR){
+      const rest = cands.filter(c=>c!==bestWR.p)
+        .map(c=>({p:c, sc:playOut(myIds.concat([c.id]),cur), now:lineup(myIds.concat([c.id]))}))
+        .sort((a,b)=>(b.sc-a.sc)||(b.p.pts-a.p.pts));
+      return {rule:false, cur, list:[bestWR, ...rest], forcedWR:true};
+    }
+  }
   // Score each candidate by full lookahead, but keep BOTH signals:
   //  - sc  = playOut end-state (has a noisy greedy tail that can misrank close calls)
   //  - now = present-lineup value with this player added (proven correct, no future guessing)
@@ -976,13 +1012,29 @@ function renderSlots(){
   const c={QB:0,RB:0,WR:0,TE:0}; const left=[];
   ['RB','WR','TE'].forEach(pos=>{const keep=pos==='TE'?1:2;(g[pos]||[]).slice(keep).forEach(p=>left.push(p));});
   left.sort((a,b)=>b.pts-a.pts); let li=0;
-  document.getElementById('slots').innerHTML=SLOTS.map(s=>{
-    if(s==='FLEX'){const p=left[li++];return `<span class="slot ${p?'on':''}">${p?esc(short(p.n)):'FLEX'}</span>`;}
-    if(s==='K'||s==='DST'){const p=(g[s]||[])[0];return `<span class="slot ${p?'on':''}">${p?esc(short(p.n)):s}</span>`;}
-    const p=g[s][c[s]++];return `<span class="slot ${p?'on':''}">${p?esc(short(p.n)):s}</span>`;
+  // Build the starting lineup as one slot per row (Yahoo-style), so you can see at a
+  // glance which positions are filled and which are still open.
+  const startSlots = FLEX_N===2
+    ? ['QB','RB','RB','WR','WR','TE','FLEX','FLEX','K','DST']
+    : ['QB','RB','RB','WR','WR','TE','FLEX','K','DST'];
+  let startTotal=0, filledStart=0;
+  const rows = startSlots.map(s=>{
+    let p=null;
+    if(s==='FLEX') p=left[li++];
+    else if(s==='K'||s==='DST') p=(g[s]||[])[0];
+    else p=g[s][c[s]++];
+    if(p && p.pts>0 && s!=='K' && s!=='DST') startTotal+=p.pts;
+    if(p) filledStart++;
+    const posClass = p ? p.pos : s.replace('FLEX','');
+    return `<div class="slotRow ${p?'filled':'open'}">
+      <span class="slotPos ${s==='FLEX'?'flex':(p?p.pos:s)}">${s}</span>
+      <span class="slotName">${p?esc(short(p.n,18)):'<span class="slotEmpty">empty</span>'}</span>
+      <span class="slotPts">${p&&p.pts>0?p.pts.toFixed(0):(p?'—':'')}</span>
+    </div>`;
   }).join('');
+  document.getElementById('slots').innerHTML = rows;
   const filled=[...mine].length;
-  document.getElementById('rosterSub').textContent=`${filled} of 15 picks made`;
+  document.getElementById('rosterSub').textContent=`${filled} of 15 · ${filledStart}/${startSlots.length} starters · ${startTotal.toFixed(0)} pts`;
 }
 
 function cliffInfo(p){
@@ -1190,38 +1242,82 @@ function renderGradeOut(){
   window.scrollTo({top:document.getElementById('gradeOut').offsetTop-60,behavior:'smooth'});
 }
 
-function depthRoundHTML(list){
-  const need={QB:1,RB:2,WR:2,TE:1}, have={QB:0,RB:0,WR:0,TE:0};
+function benchValueHTML(list){
+  // Your starters are set, so this is a bench pick. Two things matter for a bench:
+  //  (1) raw talent (best player available -- upside / injury insurance), and
+  //  (2) keeping RB and WR bench depth balanced, because those are the positions you
+  //      actually swap in during byes/injuries and where you flex from.
+  // We score every non-K/DST/2ndQB candidate by VORP, then apply a small depth-balance
+  // nudge toward whichever of RB/WR you have FEWER of on the bench, so an even build wins
+  // ties. This replaces the old "model has no opinion" dead-end with an actual pick.
+  const have={QB:0,RB:0,WR:0,TE:0};
   [...mine].forEach(i=>{const p=byId[i]; if(have[p.pos]!==undefined) have[p.pos]++;});
-  const target={QB:2,RB:4+FLEX_N,WR:4+FLEX_N,TE:2};
-  const thin=Object.keys(need).map(pos=>({pos, short:Math.max(0,target[pos]-have[pos]), have:have[pos]}))
-                  .filter(x=>x.short>0).sort((a,b)=>b.short-a.short);
-  // bye weeks where a starter is out and you have no cover at that position
+  // bench counts = rostered minus what the starting lineup uses
+  const starterUse={QB:1,RB:2,WR:2,TE:1};
+  // flex is filled by RB/WR/TE, count it toward whichever fills it in starters()
+  starters().forEach(x=>{ if(x.lab==='FLEX'&&x.p) starterUse[x.p.pos]=(starterUse[x.p.pos]||0)+1; });
+  const benchCt = pos => Math.max(0, have[pos] - (starterUse[pos]||0));
+  const rbBench=benchCt('RB'), wrBench=benchCt('WR');
+  const haveQB = have.QB>0;
+
+  // score the pool: VORP is the honest "value over a replacement at this position".
+  // The depth nudge is a genuine TIE-BREAK, not an override -- it only pulls the thinner
+  // of RB/WR ahead when the talent is close (within DEPTH_NUDGE of the raw VORP leader).
+  // We never reach past a materially better player just to balance the bench; that would
+  // repeat the old forced-position mistake. Balance decides close calls, talent decides
+  // the rest.
+  const pool=P.filter(p=>!gone.has(p.id)&&p.pts>0&&p.pos!=='K'&&p.pos!=='DST'&&!(haveQB&&p.pos==='QB'));
+  const rawRanked=pool.slice().sort((a,b)=>(b.vorp-a.vorp)||(b.pts-a.pts));
+  const rawBest=rawRanked[0];
+  const DEPTH_NUDGE=6; // only reshuffle within this VORP band of the leader
+  const thinner = rbBench<wrBench?'RB':(wrBench<rbBench?'WR':null);
+  // candidates statistically tied with the leader
+  const band=rawRanked.filter(p=>rawBest.vorp - p.vorp <= DEPTH_NUDGE);
+  let best=rawBest, balancedPick=false;
+  if(thinner){
+    const thinInBand=band.filter(p=>p.pos===thinner).sort((a,b)=>b.vorp-a.vorp)[0];
+    if(thinInBand && thinInBand!==rawBest){ best=thinInBand; balancedPick=true; }
+  }
+  // full ranking for the list: nudge the thinner position up only within the band
+  const ranked=pool.map(p=>({p, s:p.vorp + ((balancedPick||thinner) && p.pos===thinner && (rawBest.vorp-p.vorp<=DEPTH_NUDGE) ? DEPTH_NUDGE : 0)}))
+                   .sort((a,b)=>(b.s-a.s)||(b.p.pts-a.p.pts));
+  // ensure the chosen best is at the head of the displayed list
+  ranked.sort((a,b)=> (a.p===best?-1:b.p===best?1:0) || (b.s-a.s));
+
+  // bye clash info (kept -- genuinely useful for a bench pick)
   const starterByes={};
   starters().forEach(x=>{ if(x.p&&x.p.bye) (starterByes[x.p.bye]=starterByes[x.p.bye]||[]).push(x.p); });
   const clash=Object.entries(starterByes).filter(([w,arr])=>arr.length>1)
                     .sort((a,b)=>b[1].length-a[1].length);
-  const upside=list.slice(0,30).map(x=>x.p)
-    .sort((a,b)=>b.pts-a.pts).slice(0,5);
+  const posBadge = {RB:'b-green',WR:'b-blue',TE:'b-purple',QB:'b-amber'}[best.pos]||'b-gray';
   return `
-    <div class="recName" style="font-size:24px">No pick improves your lineup</div>
-    <div class="recMeta"><span class="badge b-gray">Depth round</span>
-      <span class="badge b-amber">Model has no opinion</span></div>
-    <div class="recWhy">Every remaining player scores the same because your eight starting slots are already
-    filled by better players. Handcuffs, breakout upside and injury insurance aren't in the projections,
-    so this pick is a judgment call, not a calculation. Here's what the data can still tell you.</div>
+    <div class="recName">${esc(best.n)}</div>
+    <div class="recMeta">
+      <span class="badge ${posBadge}">${best.pos}</span>
+      <span class="badge b-gray">${balancedPick?'Best of a tie · depth':'Best available'}</span>
+      ${balancedPick?`<span class="badge b-amber">shores up ${thinner} depth</span>`:''}
+      ${best.est?`<span class="badge b-gray" title="ADP-implied estimate — this player fell out of the source blend">~est</span>`:''}
+    </div>
+    <div class="recWhy">Your starting eight are set, so this is a bench pick — best player available,
+    with ties broken toward keeping your RB and WR depth even (those are what you flex and stream from).
+    Bench you have now: <b>${rbBench} RB · ${wrBench} WR</b>.
+    ${balancedPick
+      ? `${esc(best.n)} was within a hair of the top value and evens out your <b>${thinner}</b> depth, so he gets the edge.`
+      : thinner
+        ? `Your bench leans ${rbBench>wrBench?'RB':'WR'}-heavy, but the best available (<b>${esc(best.n)}</b>) is clearly ahead on value — not worth reaching for a weaker ${thinner} just to balance.`
+        : `Bench is balanced, so this is simply the best value left.`}
+    Upside, handcuffs and injury insurance still aren't in the projections, so trust your read on close ones.</div>
     <div class="meter">
-      <div class="mRow"><span>Thinnest positions</span><b>${thin.length?thin.map(t=>t.pos+' ('+t.have+')').join(' · '):'roster is balanced'}</b></div>
+      <div class="mRow"><span>Bench depth (RB / WR)</span><b>${rbBench} / ${wrBench}</b></div>
       ${clash.length?`<div class="mRow" style="margin-top:8px"><span>Bye weeks with 2+ starters out</span>
         <b>${clash.map(([w,a])=>'wk '+w+' ('+a.length+')').join(' · ')}</b></div>`:''}
-      <div class="mRow" style="margin-top:8px"><span>Highest raw projection left</span><b>${esc(upside[0]?upside[0].n:'—')}</b></div>
     </div>
     <div class="rowList" style="margin:14px -20px 0;border-top:1px solid var(--line2)">
-      ${upside.map(p=>`<div class="lrow"><span class="pos ${p.pos}">${p.pos}</span>
-        <span class="lname">${esc(p.n)}</span>
+      ${ranked.slice(0,6).map(x=>{const p=x.p;return `<div class="lrow"><span class="pos ${p.pos}">${p.pos}</span>
+        <span class="lname">${esc(p.n)}${p.est?' <span style="opacity:.5">~</span>':''}</span>
         <span class="lsub" style="width:44px">${p.bye?'bye '+p.bye:''}</span>
         <span class="lsub" style="width:34px">${p.adp}</span>
-        <span class="lnum">${p.pts.toFixed(1)}</span></div>`).join('')}
+        <span class="lnum">${p.pts.toFixed(1)}</span></div>`;}).join('')}
     </div>`;
 }
 function renderRec(){
@@ -1269,7 +1365,7 @@ function renderRec(){
   const roundNow = MY_PICKS.indexOf(cur)+1;
   if(slotsAllFull && roundNow>=8 &&
      margin<0.5 && r.list.filter(x=>Math.abs(x.sc-a.sc)<0.5).length>=5){
-    R.innerHTML=depthRoundHTML(r.list); A.innerHTML=''; AP.classList.add('hidden'); return;
+    R.innerHTML=benchValueHTML(r.list); A.innerHTML=''; AP.classList.add('hidden'); return;
   }
   AP.classList.remove('hidden');
   const cl=cliffInfo(a.p);
@@ -1281,7 +1377,6 @@ function renderRec(){
       <span class="badge b-gray">${a.p.pos}</span>
       <span class="badge b-gray">ADP ${a.p.adp}</span>
       <span class="badge b-gray">${a.p.est?'~'+a.p.pts.toFixed(0)+' est':a.p.pts+' proj'}</span>
-      ${a.p.fresh?'<span class="badge b-green" title="Refreshed 8/16 from the FantasyPros half-PPR consensus">refreshed 8/16</span>':''}
       ${a.p.est?'<span class="badge b-amber" title="No real blend for this player \u2014 this number is the median of nearby same-position ADPs, i.e. the market\'s view, not a projection">ADP-implied</span>':''}
       ${thin?'<span class="badge b-amber">Coin flip</span>':'<span class="badge b-green">Clear</span>'}
       ${a.p.consensus?'':'<span class="badge b-gray">1 source</span>'}
@@ -1332,6 +1427,7 @@ function renderRounds(){
 
 let filterPos='ALL', query='', sortMode='ADP';
 let quickQ='';
+let qPos='NEXT';  // Mark-picks "best available" position filter: NEXT | RB | WR | TE | QB
 let sinceView='since';   // 'since' | round number
 let myBoardCache=null, myBoardKey='', probableOnly=false;
 function myBoardRanks(){
@@ -1367,6 +1463,13 @@ function simLive(){ return !!sim && sim.pick<=SIM_TEAMS*SIM_ROUNDS; }
 function quickMatches(){
   const q=quickQ.trim().toLowerCase();
   if(!q){
+    // Position-value view: show the top available at a position by PROJECTED POINTS, so
+    // you can see exactly who sits just behind the tool's pick (188 / 187 / 186 ...) and
+    // grab someone you're more bullish on. Overrides the default "next up" when set.
+    if(qPos!=='NEXT'){
+      return P.filter(p=>p.pos===qPos && !gone.has(p.id) && p.pts>0)
+              .sort((a,b)=>b.pts-a.pts).slice(0,8);
+    }
     if(simLive()){
       const r=recommend();
       if(r.rule) return P.filter(p=>p.pos===r.need&&!gone.has(p.id)).sort((a,b)=>a.adp-b.adp).slice(0,7);
@@ -1390,7 +1493,14 @@ function renderQuick(){
   const list=quickMatches();
   const cnt=document.getElementById('qCount');
   if(cnt) cnt.textContent = quickQ.trim()? list.length+' match'+(list.length===1?'':'es')
-        : (simLive()? 'Best available for you' : 'Next off the board');
+        : (qPos!=='NEXT'? 'Top '+qPos+' by points'
+           : (simLive()? 'Best available for you' : 'Next off the board'));
+  // reflect active position filter on the toggle buttons
+  document.querySelectorAll('#qPosRow .qpos').forEach(b=>{
+    b.setAttribute('aria-pressed', String(b.dataset.qpos===qPos));
+  });
+  // hide the position row while searching (search overrides it) or in sim draft mode
+  const pr=document.getElementById('qPosRow'); if(pr) pr.style.display = quickQ.trim()? 'none':'flex';
   const sub=document.querySelector('.qPanel .pSub');
   if(sub) sub.textContent = simLive()? 'Pick #'+sim.pick+' — search or tap Draft' : 'Type a name, tap Gone or Mine';
   const ttl=document.querySelector('.qPanel .pTitle');
@@ -1451,7 +1561,7 @@ function renderBoard(){
       <span class="bMeta">
         <span class="lsub" data-l="ADP" title="average draft position">${p.adp}</span>
         <span class="lsub" data-l="THERE" style="width:42px;color:${shade};font-weight:600" title="chance he lasts to your pick #${refPick}">${gone.has(p.id)?'—':pct+'%'}</span>
-        <span class="lnum" style="width:52px" title="${p.est?'estimated from the median of nearby same-position ADPs \u2014 no real blend for this player':(p.pts>0?'projected season points':'no projection available')}">${p.pts>0?(p.est?`<span style="color:var(--ink3)">~${p.pts.toFixed(0)}</span>`:(p.fresh?`<span style="color:var(--green)">${p.pts.toFixed(1)}</span>`:p.pts.toFixed(1))):'<span style="color:var(--ink3);font-weight:400">n/a</span>'}</span>
+        <span class="lnum" style="width:52px" title="${p.est?'estimated from the median of nearby same-position ADPs \u2014 no real blend for this player':(p.pts>0?'projected season points':'no projection available')}">${p.pts>0?(p.est?`<span style="color:var(--ink3)">~${p.pts.toFixed(0)}</span>`:p.pts.toFixed(1)):'<span style="color:var(--ink3);font-weight:400">n/a</span>'}</span>
       </span>
       <span class="acts">
         <button class="mini ${gone.has(p.id)&&!mine.has(p.id)?'on':''}" data-g="${p.id}" aria-label="Mark ${esc(p.n)} drafted">Gone</button>
@@ -1622,7 +1732,7 @@ function simRunTo(stopPick){
 }
 function simStartNew(){
   gone=new Set(); mine=new Set(); pickLog=[]; myBoardCache=null; myBoardKey='';
-  ghostGone=0; sinceView='since'; quickQ='';
+  ghostGone=0; sinceView='since'; quickQ=''; qPos='NEXT';
   ['qq','paste'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
   const mn=document.getElementById('matchNote'); if(mn) mn.innerHTML='';
   const go=document.getElementById('gradeOut'); if(go) go.classList.add('hidden');
@@ -1771,7 +1881,7 @@ function resetAll(){
   ghostGone=0;
   for(let i=P.length-1;i>=0;i--) if(P[i].custom){ delete byId[P[i].id]; P.splice(i,1); }
   customSeq=0;
-  probableOnly=false; filterPos='ALL'; query=''; quickQ='';
+  probableOnly=false; filterPos='ALL'; query=''; quickQ=''; qPos='NEXT';
   ['q','qq','paste','cname'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
   ['matchNote','ghostNote'].forEach(id=>{ const el=document.getElementById(id); if(el) el.innerHTML=''; });
   const go=document.getElementById('gradeOut'); if(go) go.classList.add('hidden');
@@ -1851,6 +1961,7 @@ document.addEventListener('click',e=>{
     document.getElementById('gradeOut').classList.add('hidden'); return; }
   if(e.target.id==='probBtn'){ probableOnly=!probableOnly; renderControls(); renderBoard(); return; }
   const so=e.target.closest('[data-s]'); if(so){ sortMode=so.dataset.s; renderControls(); renderBoard(); return; }
+  const qp=e.target.closest('[data-qpos]'); if(qp){ qPos = (qPos===qp.dataset.qpos && qp.dataset.qpos!=='NEXT') ? 'NEXT' : qp.dataset.qpos; renderQuick(); return; }
   const g=e.target.closest('[data-g]'), m=e.target.closest('[data-m]');
   if(g){ const id=+g.dataset.g;
     if(gone.has(id)&&!mine.has(id)) gone.delete(id); else { gone.add(id); mine.delete(id); pickLog=pickLog.filter(x=>x.id!==id); }
@@ -1896,9 +2007,9 @@ if(qqEl){
 document.getElementById('assumptions').innerHTML=
  `<b>How the call is made.</b> Every projection is scored in your settings — 0.5 per reception, 4-point passing TDs, −1 interceptions, 6-point rushing and receiving TDs, 10 yards per point, −2 fumbles. For each available player it adds him to your roster, searches your next three picks exhaustively, and scores the resulting QB/RB/RB/WR/WR/TE/FLEX/FLEX lineup.
   <br><br><b>Assumptions you can check.</b> Replacement level is QB13, RB35, WR38, TE13 — the player you'd get free off waivers. Availability at future picks uses each player's real ADP standard deviation from 1,889 half-PPR mock drafts (Aug 3–8), rescaled to Yahoo's ADP means.
-  <br><br><b>Coverage.</b> 267 players — all 32 team defenses and every kicker with a real ADP. 186 carry full projections, blended across three independent sources — the FantasyPros/FFToday consensus, ESPN's Mike Clay, and Yahoo's 8/14 consensus rankings (1/3 weight). The FFToday layer was refreshed to its <b>8/13</b> pre-season projections and substituted at its original 1/3 weight — Clay and the Yahoo 8/14 layer are untouched and nothing was reweighted. 158 players matched; 43 moved 4+ points. FFToday scoring verified at 0.5/reception by arithmetic (Gibbs 279/1,422/12 + 72/572/4 = 331.4 exactly), not by label. Achane and Henry keep their manual adjustments (247.0 and 243.0) and are <b>excluded</b> from the refresh — FantasyPros has them at 259.4 and 264.2, which is a higher read than this league wants to make. Worth noting FFToday’s own 8/13 half-PPR projections put Achane at 239.2, <i>below</i> the held value, so the fade is not a lone opinion. The rest — deep handcuffs and late fliers from FFToday's Top 225 — came back from the blend empty. Rather than leave them invisible to the recommender, each now carries an ADP-implied estimate: the median of the nine nearest same-position players by ADP that do have a real blend. Every one of them sits at ADP 136+, so the estimate lands below replacement level and can't reach a starting slot or move your grade — it only lets them be ranked against each other in rounds 12–15. They show a <b>~</b> on the board and an <b>est</b> badge on your roster. Kickers and defenses still carry no projection by design.
+  <br><br><b>Coverage.</b> 267 players — all 32 team defenses and every kicker with a real ADP. 186 carry full projections, blended across three independent sources — the FantasyPros/FFToday consensus, ESPN's Mike Clay, and Yahoo's 8/14 consensus rankings (1/3 weight). Two players (Achane, Henry) carry a manual adjustment down to consensus, flagged “manual adj” on their card; the rest — deep handcuffs and late fliers from FFToday's Top 225 — came back from the blend empty. Rather than leave them invisible to the recommender, each now carries an ADP-implied estimate: the median of the nine nearest same-position players by ADP that do have a real blend. Every one of them sits at ADP 136+, so the estimate lands below replacement level and can't reach a starting slot or move your grade — it only lets them be ranked against each other in rounds 12–15. They show a <b>~</b> on the board and an <b>est</b> badge on your roster. Kickers and defenses still carry no projection by design.
     <br><br>
-    <b>Data vintage.</b> <b>Projections: FFToday 8/13, Yahoo 8/14, Clay 5/15. ADP: Yahoo 8/7 (via FFToday), with four players moved to your Yahoo 8/14 where it is newer.</b> ADP is the pure Yahoo column only — FFToday publishes Underdog+Yahoo averaged, and the Underdog half was discarded because your league drafts on Yahoo. Kicker and defense ADP were left on the old source: FFToday lists only some of them, and a partial update would have scrambled the order the K/DST rule picks from. Replacement levels are unaffected (RB36 sits ~93 pts below the lowest refreshed RB), but ranks 8–16 at RB and WR now interleave two vintages. Treat these six as the ones most likely to be stale-high at RB: <b>Josh Jacobs</b> (groin injury, first-team reps going to Lloyd), Omarion Hampton, Kenneth Walker, Breece Hall, Jeremiyah Love (sore ankle), Kyren Williams — and at WR: Nico Collins, Zay Flowers, Chris Olave, <b>Malik Nabers</b> (now WR12 ADP, likely stale-LOW), DeVonta Smith, Garrett Wilson. Ricky Pearsall removed 8/9. Camp news 8/9–8/16 not otherwise reflected: Diggs to WAS, Hubbard hamstring, Skattebo to RB18, Stribling up to ~164.`;
+    <b>Data vintage.</b> Projections late June to mid-July; Yahoo ADP 7/30. Camp news after those dates is not reflected. Ricky Pearsall removed 8/9 (out for season).`;
 
 renderRounds();
 function setFlexUI(){
