@@ -445,7 +445,11 @@ input[type=search]:focus{outline:2px solid var(--accent);outline-offset:-1px;bor
           <div class="qHint">Enter marks <b>Gone</b> · Shift+Enter marks <b>Mine</b> · Esc clears</div>
           <div class="qPosRow" id="qPosRow">
             <span class="qPosLbl">Best available:</span>
-            ${['NEXT','RB','WR','TE','QB'].map(f=>`<button class="cbtn qpos" data-qpos="${f}" aria-pressed="${f==='NEXT'}">${f==='NEXT'?'Next up':f}</button>`).join('')}
+            <button class="cbtn qpos" data-qpos="NEXT" aria-pressed="true">Next up</button>
+            <button class="cbtn qpos" data-qpos="RB" aria-pressed="false">RB</button>
+            <button class="cbtn qpos" data-qpos="WR" aria-pressed="false">WR</button>
+            <button class="cbtn qpos" data-qpos="TE" aria-pressed="false">TE</button>
+            <button class="cbtn qpos" data-qpos="QB" aria-pressed="false">QB</button>
           </div>
         </div>
         <div class="rowList" id="quick"></div>
