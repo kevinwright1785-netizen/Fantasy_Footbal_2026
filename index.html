@@ -617,7 +617,248 @@ input[type=search]:focus{outline:2px solid var(--accent);outline-offset:-1px;bor
   </div>
 </div>
 <script>
-const RAW = [["Jahmyr Gibbs","RB",330.1,1,1,0.4,6,0.319],["Bijan Robinson","RB",322.8,2,1,0.7,11,0.239],["Ja'Marr Chase","WR",281.9,3,1,0.7,6,0.234],["Puka Nacua","WR",289.3,4,1,1.2,11,0.218],["Jaxon Smith-Njigba","WR",271.3,5,1,0.8,11,0.212],["Christian McCaffrey","RB",303.8,6,1,1.4,8,0.278],["Jonathan Taylor","RB",287.5,7,1,1.6,13,0.298],["Amon-Ra St. Brown","WR",266.4,8,1,1.6,6,0.241],["CeeDee Lamb","WR",234.9,9,1,1.9,14,0.201],["James Cook","RB",263.1,10,1,2.1,7,0.289],["Justin Jefferson","WR",230.2,11,1,1.8,6,0.185],["Ashton Jeanty","RB",248.2,12,1,2.2,13,0.276],["Saquon Barkley","RB",253.9,13,1,2.7,10,0.252],["Drake London","WR",228.5,14,1,1.3,11,0.237],["Kenneth Walker","RB",239.5,15,1,2.7,5,0.249],["Chase Brown","RB",244.7,16,1,2.6,6,0.279],["Nico Collins","WR",214.6,17,1,2.1,8,0.222],["Brock Bowers","TE",196.1,18,1,4.0,13,0.23],["Omarion Hampton","RB",246.6,19,1,3.4,7,0.302],["De'Von Achane","RB",247.0,20,1,3.4,6,0.233],["Derrick Henry","RB",243.0,21,1,3.9,13,0.32],["George Pickens","WR",210.9,22,1,2.5,14,0.239],["DeVonta Smith","WR",198.0,23,1,2.8,10,0.187],["A.J. Brown","WR",209.6,24,1,3.2,11,0.215],["Trey McBride","TE",198.5,25,1,5.1,14,0.204],["Jeremiyah Love","RB",232.5,26,1,3.6,14,0.244],["Josh Allen","QB",375.9,27,1,5.9,7,0.485],["Tee Higgins","WR",189.2,28,1,2.7,6,0.293],["Chris Olave","WR",200.7,29,1,3.0,8,0.223],["Rashee Rice","WR",220.6,30,1,4.6,5,0.284],["Jaylen Waddle","WR",180.8,31,1,4.3,10,0.204],["Kyren Williams","RB",230.4,32,1,4.0,11,0.331],["Zay Flowers","WR",200.9,33,1,2.7,13,0.207],["Javonte Williams","RB",229.3,34,1,3.5,14,0.324],["Josh Jacobs","RB",249.3,35,1,3.2,11,0.331],["Breece Hall","RB",237.4,36,1,4.1,13,0.227],["Colston Loveland","TE",168.1,37,1,4.3,10,0.236],["Tetairoa McMillan","WR",189.2,38,1,3.7,5,0.204],["Garrett Wilson","WR",194.4,39,1,3.3,13,0.196],["Emeka Egbuka","WR",182.5,40,1,4.5,10,0.24],["Lamar Jackson","QB",332.4,41,1,7.1,13,0.408],["Ladd McConkey","WR",177.6,42,1,5.1,7,0.221],["Cam Skattebo","RB",220.5,43,1,4.9,8,0.287],["Terry McLaurin","WR",178.5,44,1,3.5,7,0.247],["Travis Etienne","RB",220.1,45,1,4.2,8,0.235],["Luther Burden III","WR",170.9,46,1,5.9,10,0.197],["D'Andre Swift","RB",189.4,47,1,5.4,10,0.264],["Davante Adams","WR",186.7,48,1,4.5,11,0.326],["Malik Nabers","WR",200.0,49,1,6.6,8,0.254],["Christian Watson","WR",165.8,50,1,5.0,11,0.273],["Jameson Williams","WR",179.1,51,1,5.0,6,0.23],["Quinshon Judkins","RB",208.1,52,1,6.4,11,0.263],["Joe Burrow","QB",318.1,53,1,5.6,6,0.455],["Rome Odunze","WR",177.1,54,1,5.6,10,0.276],["David Montgomery","RB",187.7,55,1,5.6,8,0.265],["Jayden Daniels","QB",327.3,56,1,7.5,7,0.384],["DJ Moore","WR",172.0,57,1,6.3,7,0.253],["Tyler Warren","TE",161.1,58,1,8.2,13,0.202],["Drake Maye","QB",332.4,59,1,7.9,11,0.414],["Bhayshul Tuten","RB",195.5,60,1,8.1,7,0.32],["Mike Evans","WR",161.3,61,1,5.9,8,0.245],["Bucky Irving","RB",204.5,62,1,6.7,10,0.247],["TreVeyon Henderson","RB",186.9,63,1,7.1,11,0.279],["Jalen Hurts","QB",323.9,64,1,6.2,10,0.459],["Brian Thomas Jr.","WR",147.0,65,1,7.2,7,0.232],["Jadarian Price","RB",183.3,66,1,7.3,11,0.309],["Parker Washington","WR",148.3,67,1,6.5,7,0.223],["Justin Herbert","QB",303.6,68,0,8.0,7,0.371],["Carnell Tate","WR",161.7,69,1,6.7,9,0.183],["Caleb Williams","QB",304.9,70,0,9.8,10,0.39],["Chuba Hubbard","RB",178.5,71,1,6.1,5,0.257],["Tucker Kraft","TE",140.2,72,1,12.2,11,0.266],["Marvin Harrison Jr.","WR",163.6,73,1,7.6,14,0.22],["Jaylen Warren","RB",172.2,74,1,6.7,9,0.228],["Rhamondre Stevenson","RB",174.5,75,1,6.0,11,0.291],["Trevor Lawrence","QB",306.7,76,1,10.9,7,0.447],["Tony Pollard","RB",176.7,77,1,8.1,9,0.219],["Alec Pierce","WR",170.9,78,1,7.1,13,0.222],["Sam LaPorta","TE",148.8,79,1,9.5,6,0.222],["DK Metcalf","WR",157.5,80,1,8.4,9,0.233],["Jordyn Tyson","WR",147.9,81,1,7.8,8,0.183],["Kyle Pitts","TE",148.3,82,1,9.0,11,0.181],["Dak Prescott","QB",305.0,83,1,10.6,14,0.437],["Rico Dowdle","RB",163.1,84,1,9.3,9,0.256],["Harold Fannin Jr.","TE",147.5,85,1,5.5,11,0.214],["Quentin Johnston","WR",145.5,86,1,7.2,7,0.289],["Chris Godwin","WR",148.1,87,1,9.2,10,0.214],["Makai Lemon","WR",143.4,88,1,8.3,10,0.205],["Blake Corum","RB",134.1,90,1,11.2,11,0.299],["Brock Purdy","QB",298.5,91,1,6.9,8,0.438],["Jaxson Dart","QB",311.0,92,1,12.8,8,0.416],["J.K. Dobbins","RB",162.5,93,1,10.5,10,0.26],["Courtland Sutton","WR",170.7,94,1,9.2,10,0.266],["Kyle Monangai","RB",154.6,95,1,10.4,10,0.232],["Jayden Reed","WR",142.4,96,1,8.1,11,0.204],["Jordan Addison","WR",142.2,97,1,9.5,6,0.248],["Denver Defense","DST",0.0,97,0,9.7,10,0],["Josh Downs","WR",131.9,98,1,8.0,13,0.191],["RJ Harvey","RB",156.9,99,1,10.5,10,0.312],["Jonathon Brooks","RB",138.2,100,1,14.9,5,0.247],["Bo Nix","QB",307.4,101,0,17.5,10,0.426],["George Kittle","TE",116.1,102,0,15.9,8,0.251],["Michael Wilson","WR",140.3,103,1,11.1,14,0.188],["Jordan Mason","RB",131.8,104,1,12.7,6,0.269],["Seattle Defense","DST",0.0,104,0,5.3,11,0],["Rachaad White","RB",150.8,105,1,12.1,7,0.28],["Kyler Murray","QB",284.3,106,0,9.8,6,0.365],["Dalton Kincaid","TE",127.8,107,0,12.2,7,0.249],["Michael Pittman Jr.","WR",155.2,108,1,8.8,9,0.198],["Patrick Mahomes","QB",297.5,109,0,14.4,5,0.398],["Xavier Worthy","WR",148.4,110,1,9.5,5,0.219],["Houston Defense","DST",0.0,110,0,9.7,8,0],["Kenny Gainwell","RB",141.5,111,1,11.2,10,0.246],["Jacory Croskey-Merritt","RB",140.2,112,1,12.3,7,0.334],["Isaiah Likely","TE",121.1,113,0,16.0,8,0.204],["Dallas Goedert","TE",139.3,114,1,17.1,10,0.308],["Matthew Stafford","QB",293.5,115,0,14.9,11,0.448],["Jakobi Meyers","WR",147.4,116,1,8.5,7,0.219],["Travis Kelce","TE",139.9,117,1,16.5,5,0.213],["Detroit Defense","DST",0.0,117,0,10.1,6,0],["Matthew Golden","WR",141.2,118,1,11.2,11,0.201],["Mark Andrews","TE",133.4,119,0,17.2,13,0.307],["Jared Goff","QB",293.3,120,0,16.7,6,0.425],["Minnesota Defense","DST",0.0,120,0,9.8,6,0],["Chris Rodriguez Jr.","RB",90.5,121,1,17.7,7,0.325],["Romeo Doubs","WR",138.8,122,1,9.4,11,0.235],["Jayden Higgins","WR",112.8,123,1,11.7,8,0.249],["KC Concepcion","WR",123.4,124,1,11.3,11,0.163],["Aaron Jones","RB",151.5,125,1,12.1,6,0.209],["John Metchie III","WR",129.7,126,1,10.9,5,0.278],["Jalen Coker","WR",127.8,127,1,12.5,5,0.222],["Theo Wease Jr.","WR",121.3,127,1,11.3,6,0.247],["Tyrone Tracy Jr.","RB",100.0,128,1,16.5,8,0.213],["Jordan Love","QB",279.4,129,0,14.7,11,0.403],["Wan'Dale Robinson","WR",141.3,130,1,11.5,9,0.151],["Brandon Aubrey","K",0.0,130,0,19.5,14,0],["Malik Willis","QB",269.2,131,0,16.8,6,0.312],["Baker Mayfield","QB",285.4,132,0,9.3,10,0.369],["Tyler Shough","QB",289.3,133,0,12.7,8,0.371],["Tyler Allgeier","RB",90.3,135,1,19.9,14,0.325],["Jake Ferguson","TE",125.6,136,0,16.1,14,0.242],["Stefon Diggs","WR",0.0,136,0,16.0,7,0],["New England Defense","DST",0.0,136,0,14.1,11,0],["Rashid Shaheed","WR",120.1,137,1,11.8,11,0.173],["LA Rams Defense","DST",0.0,137,0,18.2,11,0],["Chigoziem Okonkwo","TE",98.0,138,0,16.2,0,0.178],["Tyjae Spears","RB",121.5,139,1,14.7,9,0.217],["Jason Myers","K",0.0,141,0,19.1,11,0],["Isiah Pacheco","RB",106.3,142,1,17.3,6,0.234],["Cameron Dicker","K",0.0,142,0,14.5,7,0],["Zach Charbonnet","RB",117.5,143,1,27.1,11,0.324],["Woody Marks","RB",113.4,144,1,15.1,8,0.239],["Brian Robinson Jr.","RB",88.2,145,1,25.8,11,0.3],["Ka'imi Fairbairn","K",0.0,145,0,15.3,8,0],["Jake Bates","K",0.0,145,0,13.0,6,0],["Philadelphia Defense","DST",0.0,146,0,12.8,10,0],["Khalil Shakir","WR",136.7,147,1,9.3,7,0.184],["Eddy Pineiro","K",0.0,148,0,12.8,8,0],["Alvin Kamara","RB",106.7,149,1,23.4,8,0.203],["Cairo Santos","K",0.0,149,0,14.1,10,0],["Harrison Mevis","K",0.0,149,0,11.7,11,0],["Adonai Mitchell","WR",80.5,150,1,10.0,13,0.212],["Cooper Kupp","WR",92.8,151,1,19.0,11,0.201],["Tyler Loop","K",0.0,151,0,15.9,13,0],["Jalen Nailor","WR",104.5,152,1,18.5,13,0.253],["Tank Dell","WR",116.1,153,1,11.4,8,0.201],["LA Chargers Defense","DST",0.0,153,0,15.0,7,0],["Braelon Allen","RB",96.0,154,1,18.1,0,0.352],["Chase McLaughlin","K",0.0,154,0,16.8,10,0],["Jalen McMillan","WR",109.7,155,1,11.4,10,0.218],["Dylan Sampson","RB",89.5,156,1,18.4,0,0.227],["Brenton Strange","TE",110.9,157,0,17.1,7,0.225],["Keaton Mitchell","RB",0.0,157,0,18.5,7,0],["James Conner","RB",0.0,157,0,18.5,14,0],["Daniel Jones","QB",245.4,158,0,13.4,13,0.422],["Atlanta Defense","DST",0.0,158,0,16.5,11,0],["Oronde Gadsden","TE",100.5,159,0,18.7,0,0.248],["Jerry Jeudy","WR",131.1,160,1,11.8,11,0.147],["C.J. Stroud","QB",260.6,161,0,18.9,0,0.357],["Bryce Young","QB",247.1,162,0,10.1,5,0.426],["Deebo Samuel","WR",0.0,162,0,19.1,8,0],["Calvin Ridley","WR",128.5,163,1,11.0,9,0.182],["Buffalo Defense","DST",0.0,163,0,18.3,7,0],["Tank Bigsby","RB",0.0,164,0,19.4,10,0],["Tyler Bass","K",0.0,164,0,21.3,7,0],["Sam Darnold","QB",269.0,165,0,15.6,11,0.4],["Pittsburgh Defense","DST",0.0,165,0,13.1,9,0],["Tennessee Defense","DST",0.0,165,0,15.0,9,0],["Will Reichard","K",0.0,165,0,14.8,6,0],["Cam Little","K",0.0,165,0,18.1,7,0],["Tre Tucker","WR",117.5,166,1,9.9,13,0.204],["Baltimore Defense","DST",0.0,167,0,12.4,13,0],["Juwan Johnson","TE",114.4,168,0,20.7,8,0.156],["Hunter Henry","TE",117.5,169,0,21.0,11,0.25],["Wil Lutz","K",0.0,169,0,18.5,10,0],["Mike Washington Jr.","RB",0.0,172,0,20.3,13,0],["New Orleans Defense","DST",0.0,172,0,11.1,8,0],["Harrison Butker","K",0.0,172,0,17.7,5,0],["Evan McPherson","K",0.0,174,0,17.6,6,0],["Cam Ward","QB",242.4,175,0,20.4,9,0.344],["Omar Cooper Jr.","WR",0.0,175,0,20.6,13,0],["Chris Boswell","K",0.0,175,0,5.8,9,0],["Denzel Boston","WR",102.0,177,1,20.8,11,0.171],["Jauan Jennings","WR",99.8,179,1,14.8,6,0.284],["Rashod Bateman","WR",109.3,180,1,22.6,13,0.315],["Nick Folk","K",0.0,181,0,18.1,9,0],["Greg Dulcich","TE",111.6,184,0,21.7,0,0.215],["Malik Washington","WR",0.0,184,0,21.7,6,0],["Antonio Williams","WR",103.8,186,1,20.6,7,0.214],["Jacoby Brissett","QB",235.6,188,0,22.1,0,0.348],["MarShawn Lloyd","RB",0.0,188,0,22.2,11,0],["Justice Hill","RB",94.6,190,1,3.9,13,0.243],["Kimani Vidal","RB",0.0,190,0,22.4,7,0],["Jordan James","RB",89.2,192,1,11.1,8,0.274],["Sean Tucker","RB",0.0,193,0,22.8,10,0],["Samaje Perine","RB",87.6,195,1,23.0,0,0.281],["Ty Johnson","RB",83.1,198,1,23.3,0,0.31],["George Holani","RB",0.0,198,0,23.4,11,0],["AJ Barner","TE",113.8,200,0,23.5,0,0.26],["Travis Hunter","WR",0.0,201,0,23.7,7,0],["Pat Freiermuth","TE",105.7,204,0,24.0,0,0.265],["De'Zhaun Stribling","WR",0.0,204,0,24.1,8,0],["T.J. Hockenson","TE",112.6,205,0,24.1,0,0.173],["Kaytron Allen","RB",0.0,205,0,24.2,7,0],["Terrance Ferguson","TE",92.1,206,0,24.2,0,0.277],["Kenyon Sadiq","TE",100.5,208,0,24.5,0,0.156],["Cade Otton","TE",101.3,210,0,24.7,0,0.186],["Mike Gesicki","TE",90.5,212,0,25.0,0,0.265],["Evan Engram","TE",88.4,214,0,25.2,0,0.19],["Mason Taylor","TE",63.9,216,0,25.4,0,0.141],["Ray Davis","RB",0.0,216,0,25.4,7,0],["Jaydon Blue","RB",0.0,216,0,25.5,14,0],["Tre Harris","WR",0.0,217,0,25.6,7,0],["Michael Mayer","TE",81.5,218,0,25.7,0,0.221],["Cole Kmet","TE",72.9,220,0,25.9,0,0.247],["David Njoku","TE",75.5,222,0,26.1,0,0.251],["Isaac TeSlaa","WR",0.0,226,0,26.7,6,0],["Caleb Douglas","WR",0.0,230,0,27.1,6,0],["Dalton Schultz","TE",107.1,233,0,27.4,0,0.155],["Emari Demercado","RB",0.0,235,0,27.7,5,0],["Xavier Legette","WR",0.0,235,0,27.7,5,0],["Jaylen Wright","RB",0.0,237,0,28.0,6,0],["Andrei Iosivas","WR",0.0,240,0,28.3,6,0],["Ryan Flournoy","WR",0.0,244,0,28.7,14,0],["Darius Slayton","WR",0.0,245,0,28.9,8,0],["Tyquan Thornton","WR",0.0,248,0,29.3,5,0],["KaVontae Turpin","WR",0.0,250,0,29.5,14,0],["Isaiah Davis","RB",0.0,250,0,29.5,13,0],["Ollie Gordon II","RB",0.0,250,0,29.5,6,0],["Arizona Defense","DST",0.0,250,0,25.0,14,0],["Carolina Defense","DST",0.0,250,0,25.0,5,0],["Chicago Defense","DST",0.0,250,0,25.0,10,0],["Cincinnati Defense","DST",0.0,250,0,25.0,6,0],["Cleveland Defense","DST",0.0,250,0,25.0,11,0],["Dallas Defense","DST",0.0,250,0,25.0,14,0],["Green Bay Defense","DST",0.0,250,0,25.0,11,0],["Indianapolis Defense","DST",0.0,250,0,25.0,13,0],["Jacksonville Defense","DST",0.0,250,0,25.0,7,0],["Kansas City Defense","DST",0.0,250,0,25.0,5,0],["Las Vegas Defense","DST",0.0,250,0,25.0,13,0],["Miami Defense","DST",0.0,250,0,25.0,6,0],["NY Giants Defense","DST",0.0,250,0,25.0,8,0],["NY Jets Defense","DST",0.0,250,0,25.0,13,0],["San Francisco Defense","DST",0.0,250,0,25.0,8,0],["Tampa Bay Defense","DST",0.0,250,0,25.0,10,0],["Washington Defense","DST",0.0,250,0,25.0,7,0],["Germie Bernard","WR",0.0,257,0,30.3,9,0]];
+/* ============================================================================
+   DATASET METHODOLOGY — updated 8/22/2026
+   Blend: 50% FFToday (8/20/2026 actual half-PPR points) + 50% Yahoo (8/21/2026
+   consensus half-PPR rankings, rank-mapped onto FFToday's point curve per position).
+   ESPN/Mike Clay was REMOVED as a source on this date — no longer part of the blend.
+   ADP is sourced from Yahoo's overall 1-300 ranking.
+   Players in only one source use that source's value; a small tail is ADP-est-filled.
+   MANUAL_OVERRIDES (Achane 247, Henry 243) are applied AFTER the blend and kept
+   deliberately — the fresh FFToday numbers (Henry 251.6 w/ 0 rec TD, Achane 239.2)
+   independently corroborate these fades.
+   ============================================================================ */
+const RAW = [["Jahmyr Gibbs","RB",331.4,1,1,6.0,6,0.319],
+["Bijan Robinson","RB",324.9,2,1,6.1,11,0.239],
+["Ja'Marr Chase","WR",276.9,3,1,6.7,6,0.234],
+["Puka Nacua","WR",276.9,4,1,6.6,11,0.218],
+["Christian McCaffrey","RB",286.7,5,1,6.4,8,0.278],
+["Jonathan Taylor","RB",286.7,6,1,6.3,13,0.298],
+["Amon-Ra St. Brown","WR",257.1,7,1,7.0,6,0.241],
+["Jaxon Smith-Njigba","WR",257.1,8,1,6.9,11,0.212],
+["James Cook","RB",259.2,9,1,6.5,7,0.289],
+["CeeDee Lamb","WR",215.9,10,1,7.2,14,0.201],
+["Saquon Barkley","RB",246.4,11,1,6.7,10,0.252],
+["Kenneth Walker","RB",239.2,12,1,7.1,11,0.249],
+["Ashton Jeanty","RB",237.1,13,1,7.5,13,0.276],
+["Chase Brown","RB",239.6,14,1,6.9,6,0.279],
+["Justin Jefferson","WR",218.3,15,1,7.1,6,0.185],
+["De'Von Achane","RB",247.0,16,1,7.3,6,0.233],
+["Omarion Hampton","RB",238.9,17,1,7.2,7,0.302],
+["Derrick Henry","RB",243.0,18,1,6.8,13,0.32],
+["Drake London","WR",213.9,19,1,7.4,11,0.237],
+["Brock Bowers","TE",202.3,20,1,5.4,13,0.23],
+["Nico Collins","WR",204.6,21,1,7.5,8,0.222],
+["George Pickens","WR",195.4,22,1,7.9,14,0.239],
+["A.J. Brown","WR",200.5,23,1,7.6,11,0.215],
+["Malik Nabers","WR",195.1,24,1,8.0,8,0.254],
+["DeVonta Smith","WR",189.9,25,1,8.4,10,0.187],
+["Chris Olave","WR",200.3,26,1,7.7,8,0.223],
+["Kyren Williams","RB",230.6,27,1,7.6,11,0.331],
+["Josh Allen","QB",384.2,28,1,7.2,7,0.485],
+["Trey McBride","TE",178.1,29,1,5.9,14,0.204],
+["Tee Higgins","WR",182.1,30,1,8.9,6,0.293],
+["Zay Flowers","WR",191.4,31,1,8.2,13,0.207],
+["Breece Hall","RB",222.0,32,1,8.1,13,0.227],
+["Jaylen Waddle","WR",179.9,33,1,9.0,10,0.204],
+["Jeremiyah Love","RB",224.4,34,1,8.0,14,0.244],
+["Javonte Williams","RB",224.4,35,1,7.9,14,0.324],
+["Rashee Rice","WR",193.9,36,1,8.1,5,0.284],
+["Tetairoa McMillan","WR",185.6,37,1,8.6,5,0.204],
+["Colston Loveland","TE",178.1,38,1,5.7,10,0.236],
+["Ladd McConkey","WR",169.6,39,1,9.7,7,0.221],
+["Josh Jacobs","RB",226.7,40,1,7.7,11,0.331],
+["Garrett Wilson","WR",189.3,41,1,8.5,13,0.196],
+["Travis Etienne","RB",207.2,42,1,8.5,8,0.235],
+["Emeka Egbuka","WR",185.6,42,1,8.7,10,0.24],
+["D'Andre Swift","RB",209.7,43,1,8.4,10,0.264],
+["Terry McLaurin","WR",167.4,44,1,10.0,7,0.247],
+["Luther Burden III","WR",167.9,45,1,9.9,10,0.197],
+["Cam Skattebo","RB",210.2,46,1,8.3,8,0.287],
+["Tyler Warren","TE",152.6,47,1,6.2,13,0.202],
+["DJ Moore","WR",171.3,48,1,9.5,7,0.253],
+["Lamar Jackson","QB",338.9,49,1,8.0,13,0.408],
+["David Montgomery","RB",195.1,50,1,8.9,8,0.265],
+["Quinshon Judkins","RB",198.7,51,1,8.8,11,0.263],
+["Rome Odunze","WR",170.5,52,1,9.6,10,0.276],
+["Jameson Williams","WR",179.8,53,1,9.1,6,0.23],
+["Christian Watson","WR",172.7,54,1,9.4,11,0.273],
+["Davante Adams","WR",178.4,55,1,9.2,11,0.326],
+["Parker Washington","WR",96.8,56,1,14.5,7,0.223],
+["Bucky Irving","RB",201.4,57,1,8.7,10,0.247],
+["Bhayshul Tuten","RB",194.2,58,1,9.1,7,0.32],
+["Mike Evans","WR",161.7,59,1,10.2,8,0.245],
+["Drake Maye","QB",338.9,60,1,7.6,11,0.414],
+["Jayden Daniels","QB",329.4,61,1,8.4,7,0.384],
+["Joe Burrow","QB",326.1,62,1,8.8,6,0.455],
+["Jadarian Price","RB",176.4,63,1,9.2,11,0.309],
+["Jalen Hurts","QB",325.0,64,1,9.2,10,0.459],
+["TreVeyon Henderson","RB",176.3,65,1,9.3,11,0.279],
+["Tucker Kraft","TE",139.8,66,1,6.9,11,0.266],
+["Marvin Harrison Jr.","WR",106.2,67,1,13.5,14,0.22],
+["Rhamondre Stevenson","RB",176.2,68,1,9.5,11,0.291],
+["Sam LaPorta","TE",141.3,69,1,6.4,6,0.222],
+["Brian Thomas Jr.","WR",95.1,70,1,14.8,7,0.232],
+["Jaylen Warren","RB",153.1,71,1,9.9,9,0.228],
+["Caleb Williams","QB",318.6,72,1,9.6,10,0.39],
+["Carnell Tate","WR",100.1,73,1,14.1,9,0.183],
+["Justin Herbert","QB",314.9,74,1,11.2,7,0.371],
+["Jonathon Brooks","RB",152.6,75,1,10.0,5,0.247],
+["DK Metcalf","WR",165.4,76,1,10.1,9,0.233],
+["Jordyn Tyson","WR",120.2,77,1,13.0,8,0.183],
+["Harold Fannin Jr.","TE",139.8,78,1,7.2,11,0.214],
+["Tony Pollard","RB",175.5,79,1,9.6,9,0.219],
+["Rico Dowdle","RB",151.4,80,1,10.1,9,0.256],
+["Trevor Lawrence","QB",314.0,81,1,11.6,7,0.447],
+["Dak Prescott","QB",315.3,82,1,10.8,14,0.437],
+["Kyle Pitts","TE",141.3,83,1,6.7,11,0.181],
+["J.K. Dobbins","RB",165.2,84,1,9.7,10,0.26],
+["Michael Wilson","WR",144.2,85,1,11.1,14,0.188],
+["Chris Godwin","WR",150.1,86,1,10.7,10,0.214],
+["Stefon Diggs","WR",131.1,87,1,12.3,7,0],
+["Jacory Croskey-Merritt","RB",135.2,88,1,10.8,7,0.334],
+["De'Zhaun Stribling","WR",129.7,89,1,12.4,8,0],
+["Josh Downs","WR",132.5,90,1,12.1,13,0.191],
+["Blake Corum","RB",143.7,91,1,10.4,11,0.299],
+["Quentin Johnston","WR",137.6,92,1,11.8,7,0.289],
+["George Kittle","TE",130.8,93,1,7.5,8,0.251],
+["Jordan Addison","WR",139.4,94,1,11.4,6,0.248],
+["Jayden Reed","WR",156.3,95,1,10.5,11,0.204],
+["Chuba Hubbard","RB",147.5,96,1,10.3,5,0.257],
+["Brock Purdy","QB",316.1,97,1,10.4,8,0.438],
+["Courtland Sutton","WR",161.1,98,1,10.4,10,0.266],
+["Alec Pierce","WR",146.8,99,1,10.9,13,0.222],
+["Bo Nix","QB",317.5,100,1,10.0,10,0.426],
+["Jordan Mason","RB",136.6,101,1,10.7,6,0.269],
+["Michael Pittman Jr.","WR",155.7,102,1,10.6,9,0.198],
+["Jaxson Dart","QB",313.6,103,1,12.0,8,0.416],
+["KC Concepcion","WR",138.1,104,1,11.6,11,0.163],
+["Matthew Golden","WR",144.7,105,1,11.0,11,0.201],
+["Dalton Kincaid","TE",125.8,106,1,8.5,7,0.249],
+["Makai Lemon","WR",127.3,107,1,12.9,10,0.205],
+["Kyle Monangai","RB",128.6,108,1,10.9,10,0.232],
+["RJ Harvey","RB",127.8,109,1,11.1,10,0.312],
+["Kyler Murray","QB",308.9,110,1,12.8,6,0.365],
+["Rachaad White","RB",137.9,111,1,10.5,7,0.28],
+["Jalen Coker","WR",118.4,112,1,13.1,5,0.222],
+["Matthew Stafford","QB",305.8,113,1,13.6,11,0.448],
+["Kenny Gainwell","RB",122.9,114,1,11.2,10,0.246],
+["Chris Rodriguez Jr.","RB",113.7,115,1,11.5,7,0.325],
+["Dallas Goedert","TE",127.5,116,1,8.2,10,0.308],
+["Patrick Mahomes","QB",306.7,117,1,13.2,5,0.398],
+["Travis Kelce","TE",130.8,118,1,7.7,5,0.213],
+["Jared Goff","QB",308.9,119,1,12.4,6,0.425],
+["Jakobi Meyers","WR",141.4,120,1,11.3,7,0.219],
+["Wan'Dale Robinson","WR",127.9,121,1,12.8,9,0.151],
+["Romeo Doubs","WR",135.5,122,1,12.0,11,0.235],
+["Isaiah Likely","TE",119.0,123,1,9.0,8,0.204],
+["Aaron Jones","RB",117.5,124,1,11.3,6,0.209],
+["Keaton Mitchell","RB",90.8,125,1,11.9,7,0],
+["Xavier Worthy","WR",139.4,126,1,11.5,5,0.219],
+["Mark Andrews","TE",127.5,127,1,8.0,13,0.307],
+["Malik Willis","QB",288.1,128,1,15.2,6,0.312],
+["Jordan Love","QB",293.3,130,1,14.4,11,0.403],
+["Rashid Shaheed","WR",128.2,131,1,12.5,11,0.173],
+["Baker Mayfield","QB",288.1,132,1,14.8,10,0.369],
+["Juwan Johnson","TE",117.8,133,1,9.5,8,0.156],
+["Denzel Boston","WR",105.9,134,1,13.6,11,0.171],
+["Tank Bigsby","RB",84.2,135,1,12.5,10,0],
+["Tyler Shough","QB",297.7,136,1,14.0,8,0.371],
+["Tyjae Spears","RB",88.8,137,1,12.1,9,0.217],
+["Tyler Allgeier","RB",89.6,138,1,12.0,14,0.325],
+["Khalil Shakir","WR",128.2,139,1,12.6,7,0.184],
+["Jonah Coleman","RB",71.8,140,1,13.5,10,0.0],
+["MarShawn Lloyd","RB",80.3,141,1,12.9,11,0],
+["Woody Marks","RB",99.8,142,1,11.6,8,0.239],
+["Zach Charbonnet","RB",98.8,143,1,11.7,11,0.324],
+["Keenan Allen","WR",102.1,144,1,13.8,13,0.0],
+["Jake Ferguson","TE",120.8,145,1,8.7,14,0.242],
+["Adonai Mitchell","WR",101.0,146,1,14.0,13,0.212],
+["Deebo Samuel","WR",108.0,147,1,13.4,8,0],
+["Mike Washington Jr.","RB",72.5,148,1,13.3,13,0],
+["Chigoziem Okonkwo","TE",106.5,149,1,10.3,7,0.178],
+["Houston Defense","DST",126.0,150,1,4.2,8,0.0],
+["Jalen McMillan","WR",109.0,151,1,13.3,10,0.218],
+["Brian Robinson Jr.","RB",80.5,153,1,12.8,11,0.3],
+["Jalen Nailor","WR",99.8,154,1,14.3,13,0.253],
+["Travis Hunter","WR",88.8,155,1,15.1,7,0],
+["Sam Darnold","QB",285.2,156,1,15.6,11,0.4],
+["Dalton Schultz","TE",111.3,157,1,9.8,8,0.155],
+["Brenton Strange","TE",109.8,158,1,10.0,7,0.225],
+["Hunter Henry","TE",117.8,159,1,9.3,11,0.25],
+["Daniel Jones","QB",277.3,160,1,16.0,13,0.422],
+["LA Rams Defense","DST",111.0,161,1,5.1,11,0.0],
+["Brandon Aubrey","K",150.0,162,1,3.6,0,0],
+["Seattle Defense","DST",116.5,163,1,4.5,11,0.0],
+["Denver Defense","DST",119.5,164,1,4.4,10,0.0],
+["C.J. Stroud","QB",262.6,165,1,16.4,8,0.357],
+["Tyrone Tracy Jr.","RB",86.0,166,1,12.3,8,0.213],
+["Ray Davis","RB",63.9,168,1,13.9,7,0],
+["Ka'imi Fairbairn","K",142.0,169,1,4.1,0,0],
+["Alvin Kamara","RB",84.5,172,1,12.4,8,0.203],
+["Philadelphia Defense","DST",108.0,173,1,5.2,10,0.0],
+["Terrance Ferguson","TE",104.3,174,1,10.8,11,0.277],
+["Cameron Dicker","K",142.0,176,1,3.9,0,0],
+["Ryan Flournoy","WR",94.4,177,1,14.9,14,0],
+["New England Defense","DST",105.0,179,1,5.8,11,0.0],
+["Greg Dulcich","TE",106.5,180,1,10.5,6,0.215],
+["Braelon Allen","RB",68.2,181,1,13.6,13,0.352],
+["Minnesota Defense","DST",113.0,182,1,4.7,6,0.0],
+["Isiah Pacheco","RB",79.5,183,1,13.1,6,0.234],
+["Pittsburgh Defense","DST",112.5,185,1,4.9,9,0.0],
+["Cam Little","K",131.5,186,1,4.7,0,0],
+["Tre Tucker","WR",101.9,187,1,13.9,13,0.204],
+["Jacksonville Defense","DST",106.5,189,1,5.6,7,0.0],
+["Baltimore Defense","DST",101.5,190,1,6.1,13,0.0],
+["Jason Myers","K",135.5,191,1,4.4,0,0],
+["Dylan Sampson","RB",81.3,192,1,12.7,11,0.227],
+["T.J. Hockenson","TE",100.7,194,1,11.1,6,0.173],
+["LA Chargers Defense","DST",107.0,195,1,5.4,7,0.0],
+["Tre Harris","WR",84.2,196,1,15.3,7,0],
+["Eddy Pineiro","K",130.5,197,1,4.9,0,0],
+["Kansas City Defense","DST",91.0,200,1,7.7,5,0.0],
+["Tyler Loop","K",127.5,201,1,5.7,0,0],
+["Cairo Santos","K",127.0,202,1,6.0,0,0],
+["Oronde Gadsden","TE",90.3,203,1,11.8,7,0.248],
+["Green Bay Defense","DST",97.0,207,1,6.5,11,0.0],
+["Jerry Jeudy","WR",96.3,209,1,14.6,11,0.147],
+["Jake Bates","K",125.5,212,1,6.5,0,0],
+["Will Reichard","K",125.0,219,1,6.8,0,0],
+["Rashod Bateman","WR",97.5,221,1,14.4,13,0.315],
+["Buffalo Defense","DST",104.0,224,1,6.0,7,0.0],
+["Cade Otton","TE",96.0,225,1,11.3,10,0.186],
+["Evan McPherson","K",122.5,227,1,8.1,0,0],
+["Calvin Ridley","WR",89.4,234,1,15.0,9,0.182],
+["andy borregales","K",125.0,236,1,7.1,0,0.0],
+["Andres Borregales","K",124.0,236,1,7.3,0,0.0],
+["Chase McLaughlin","K",128.0,237,1,5.5,0,0],
+["San Francisco Defense","DST",87.0,238,1,8.4,8,0.0],
+["Chris Boswell","K",122.5,239,1,7.9,0,0],
+["Detroit Defense","DST",100.0,241,1,6.3,6,0.0],
+["Pat Freiermuth","TE",89.8,242,1,12.1,9,0.265],
+["Justice Hill","RB",78.2,251,1,13.2,13,0.243],
+["Wil Lutz","K",128.5,252,1,5.2,0,0],
+["Harrison Butker","K",127.0,255,1,6.3,0,0],
+["Indianapolis Defense","DST",93.0,264,1,7.0,13,0.0],
+["Atlanta Defense","DST",90.5,266,1,8.0,11,0.0],
+["Chicago Defense","DST",92.5,267,1,7.2,10,0.0],
+["NY Giants Defense","DST",92.0,274,1,7.4,8,0.0],
+["Dallas Defense","DST",90.5,282,1,7.9,14,0.0],
+["Cleveland Defense","DST",95.5,286,1,6.6,11,0.0],
+["New Orleans Defense","DST",93.0,289,1,6.8,8,0.0],
+["Tampa Bay Defense","DST",89.5,290,1,8.2,10,0.0],
+["Mike Gesicki","TE",87.8,293,1,12.3,6,0.265],
+["Cincinnati Defense","DST",91.0,296,1,7.5,6,0.0],
+["Tennessee Defense","DST",83.0,300,1,8.6,9,0.0],
+["Washington Defense","DST",81.5,300,1,8.8,7,0.0],
+["Carolina Defense","DST",80.0,300,1,8.9,5,0.0],
+["NY Jets Defense","DST",77.0,300,1,9.1,13,0.0],
+["Arizona Defense","DST",76.5,300,1,9.3,14,0.0],
+["Las Vegas Defense","DST",75.0,300,1,9.5,13,0.0],
+["Miami Defense","DST",73.0,300,1,9.6,6,0.0],
+["Tyler Bass","K",123.0,315,1,7.6,0,0],
+["Evan Engram","TE",92.7,324,1,11.6,10,0.19],
+["Samaje Perine","RB",66.2,358,1,13.7,6,0.281]];
 
 const MY_PICKS = [10,15,34,39,58,63,82,87,106,111,130,135,154,159,178];
 const LAST_TWO = [159,178];
@@ -635,19 +876,15 @@ const P = RAW.map((r,i)=>({id:i,n:r[0],pos:r[1],pts:r[2],adp:r[3],consensus:!!r[
                            sd:r[5]||Math.max(1,0.118*r[3]), bye:r[6]||0, tdShare:r[7]||0, override:MANUAL_OVERRIDES[r[0]]||null}));
 P.forEach(p=>{ p.alt = p.pos==='DST' ? (NICK[p.n.replace(' Defense','')]||'') : ''; });
 
-/* ---- ADP-implied fallback for blend failures ----
-   31 RB/WR came out of the blend at 0.0 because a source dropped them, not because
-   they project as nothing -- James Conner, Deebo Samuel, Travis Hunter, Tank Bigsby,
-   Xavier Legette and others. A 0.0 makes a player invisible to the recommender (it
-   filters pts<=0), which is most of why rounds 12-15 collapsed to "model has no
-   opinion": half the live names in that range had no number attached.
-
-   Rather than invent player-specific projections, take the market's own view: the
-   median of the nine nearest same-position players by ADP that DO carry a real blend.
-   Every one of these players sits at ADP 136+, so the estimate lands well below
-   replacement level and cannot smuggle anyone into a starting slot or inflate the
-   grade -- it only makes them rankable against each other late. Flagged est:true and
-   badged wherever it surfaces so it is never read as a real projection. */
+/* ---- ADP-implied fallback (safety net) ----
+   The 8/22 50/50 FFToday+Yahoo rebuild resolved the old blend-failures: every player
+   in the dataset now carries a real point value (0 zeros, K and DST populate). This
+   fallback therefore no longer fires in normal use -- it only triggers on pts<=0, and
+   the current RAW has none. It's kept as a safety net: if a future source refresh
+   drops a player to 0, the recommender would otherwise filter them out (pts<=0) and
+   they'd vanish from late rounds. In that case this takes the market's view -- the
+   median of the nine nearest same-position players by ADP that carry a real value --
+   and flags it est:true so it's never read as a real projection. */
 const EST_K = 9;
 (function fillBlendGaps(){
   const real={};
@@ -692,8 +929,14 @@ const REPL_BY_FLEX = {
      league starts more TEs than a 1-flex league, so replacement sits deeper. 1-flex
      should be ~TE12 = 127.8. The shared number was inflating elite-TE value in 1-flex
      enough to put McBride ahead of a 2nd RB in round 2. */
-  2:{QB:289.3, RB:150.0, WR:147.4, TE:120.5, K:137.0, DST:110.0},
-  1:{QB:289.3, RB:166.1, WR:164.2, TE:127.8, K:137.0, DST:110.0}
+  /* 8/22 rescale: the 50/50 FFToday+Yahoo blend shifted the QB point scale UP (~+15
+     across the tier -- Allen 384, and QB17 is now 305.8 vs the old 289.3). The QB
+     replacement level MUST move with the scale or every QB looks ~16 pts more valuable
+     over replacement than they are, which pulled the QB pick into round 2. Reset to the
+     new QB17 = 305.8 to restore the RB-heavy / QB-by-R5-6 behavior. RB/WR/TE/K/DST
+     scales did not shift enough to require moving their levels. */
+  2:{QB:305.8, RB:150.0, WR:147.4, TE:120.5, K:137.0, DST:110.0},
+  1:{QB:305.8, RB:166.1, WR:164.2, TE:127.8, K:137.0, DST:110.0}
 };
 const CAL_BY_FLEX = { 2:{bench:1830.0, floor:0}, 1:{bench:1640.0, floor:0} };
 /* floor = a roster of nothing: every starting slot filled at replacement. Derived from
