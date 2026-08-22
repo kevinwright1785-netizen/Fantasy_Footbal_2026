@@ -1101,22 +1101,69 @@ function recommend(){
     return true;
   }).sort((a,b)=>b.vorp-a.vorp).slice(0,30);
 
-  // ---- WR-by-round-4 guard ----
-  // A pure RB open (RB-RB-RB-RB) lets WR talent slip too far -- the WR tier cliffs while
-  // you're stacking a fourth RB you may never start. Enforce at least one WR in the first
-  // four rounds: if we're at pick 4 with zero WRs rostered, the recommendation must be the
-  // best available WR. (Rounds 1-3 stay unconstrained so an elite RB run isn't blocked.)
+  // ---- Balanced-open guard: 2 RB + 2 WR by the end of round 4 (2-flex) ----
+  // Kevin's rule: leave round 4 with two RBs and two WRs, UNLESS an obviously elite
+  // player at another position falls. FFToday projects RBs generously, so the raw model
+  // over-drafts RB early and leaves the WR corps thin (measured: 3RB-1WR opens finish
+  // ~83 pts weaker at WR than 2RB-2WR for only ~29 pts more total). This guard bakes in
+  // the balanced open while still letting a true outlier through.
+  //
+  // Mechanic: in rounds 1-4, figure out which position (RB or WR) I still need to reach
+  // 2-and-2. If I'm short on one and taking anything else would make 2-2 impossible with
+  // the picks remaining before the round-4 deadline, steer to the needed position -- but
+  // only if the best "needed" player is within ELITE_GAP VORP of the overall best
+  // available. If someone at another position is more than ELITE_GAP better (a genuine
+  // elite who fell), take them instead (escape hatch). 1-flex is unaffected (its own
+  // logic differs) -- this guard is 2-flex only, matching Kevin's real league.
   const roundNow0 = MY_PICKS.indexOf(cur)+1;
-  const myWR0 = myIds.filter(i=>byId[i].pos==='WR').length;
-  if(roundNow0===4 && myWR0===0){
-    const bestWR = cands.filter(c=>c.pos==='WR')
-      .map(c=>({p:c, sc:playOut(myIds.concat([c.id]),cur), now:lineup(myIds.concat([c.id]))}))
-      .sort((a,b)=>(b.sc-a.sc)||(b.p.pts-a.p.pts))[0];
-    if(bestWR){
-      const rest = cands.filter(c=>c!==bestWR.p)
-        .map(c=>({p:c, sc:playOut(myIds.concat([c.id]),cur), now:lineup(myIds.concat([c.id]))}))
-        .sort((a,b)=>(b.sc-a.sc)||(b.p.pts-a.p.pts));
-      return {rule:false, cur, list:[bestWR, ...rest], forcedWR:true};
+  const ELITE_GAP = 25;   // VORP a faller must beat the needed-position best by to override balance
+  // Rounds 1-2 stay fully flexible (take best value, even 2 RBs); the guard only enforces
+  // the 2-RB-2-WR target from round 3 onward, so it's guaranteed by the end of round 4.
+  if(FLEX_N===2 && roundNow0>=3 && roundNow0<=4){
+    const myRB0 = myIds.filter(i=>byId[i].pos==='RB').length;
+    const myWR0 = myIds.filter(i=>byId[i].pos==='WR').length;
+    const needRB = Math.max(0, 2 - myRB0);
+    const needWR = Math.max(0, 2 - myWR0);
+    const picksLeftThruR4 = 4 - roundNow0 + 1;   // this pick + remaining thru R4
+    // Steer toward whichever of RB/WR is underweight, EARLY enough to actually reach 2-2.
+    // Only act on a REAL imbalance (you already lean one way) or when cornered on picks.
+    // Round 1 with an empty roster is NOT an imbalance -- take the best player there and let
+    // the balancing kick in from pick 2 on, so we don't pass an elite RB at 1.x for a WR.
+    let needPos = null;
+    const lopsided = (myRB0 >= 2 && myWR0 < 2) ? 'WR'      // 2+ RB, still short WR -> take WR
+                   : (myWR0 >= 2 && myRB0 < 2) ? 'RB'      // 2+ WR, still short RB -> take RB
+                   : null;
+    const cornered = (needRB + needWR) >= picksLeftThruR4 && (needRB + needWR) > 0
+                     && (myRB0 + myWR0) > 0;               // never on a truly empty roster
+    if(lopsided) needPos = lopsided;                       // e.g. 2RB 0-1WR -> take WR now
+    else if(cornered){                                     // both still short, running out of room
+      if(needRB > 0 && needWR > 0) needPos = (myWR0 <= myRB0) ? 'WR' : 'RB';
+      else if(needWR > 0) needPos = 'WR';
+      else if(needRB > 0) needPos = 'RB';
+    }
+    if(needPos){
+      // Search the FULL available pool for the needed position -- not the top-30 VORP slice
+      // (cands), because in an RB-heavy dataset every WR can sit past rank 30 once you hold
+      // 2 RBs, which made bestNeed undefined and silently skipped the guard.
+      const poolNeed = P.filter(p=>!gone.has(p.id) && p.pts>0 && p.pos===needPos)
+        .sort((a,b)=>b.vorp-a.vorp);
+      const bestNeed = poolNeed[0];
+      const bestAny  = cands[0]; // best overall in the top slice
+      // escape hatch: a genuinely elite faller at a DIFFERENT position, more than ELITE_GAP
+      // better on VORP. Never let RB override a WR need here (that's the bias we're fixing) --
+      // the hatch is for a scarce elite at QB/TE (or an elite RB when WE need RB).
+      const hatchOK = bestAny && bestNeed && bestAny.pos!==needPos &&
+                      !(needPos==='WR' && bestAny.pos==='RB') &&   // don't let RB jump a WR need
+                      (bestAny.vorp - bestNeed.vorp) > ELITE_GAP;
+      const eliteFaller = hatchOK ? bestAny : null;
+      if(bestNeed && !eliteFaller){
+        const pick = bestNeed;
+        const rest = cands.filter(c=>c!==pick)
+          .map(c=>({p:c, sc:playOut(myIds.concat([c.id]),cur), now:lineup(myIds.concat([c.id]))}))
+          .sort((a,b)=>(b.sc-a.sc)||(b.p.pts-a.p.pts));
+        const head={p:pick, sc:playOut(myIds.concat([pick.id]),cur), now:lineup(myIds.concat([pick.id]))};
+        return {rule:false, cur, list:[head, ...rest], forcedWR:needPos==='WR', balancedOpen:true, needPos};
+      }
     }
   }
   // Score each candidate by full lookahead, but keep BOTH signals:
